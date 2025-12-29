@@ -1,5 +1,9 @@
 # rentfree
 
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)](https://goreportcard.com/report/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)
+
 A production-ready, multi-layer caching library for Go applications with minimal dependencies.
 
 ## Features
@@ -221,11 +225,11 @@ Metrics can be published via:
 
 | Package | Coverage |
 |---------|----------|
-| `internal/config` | 98.2% |
-| `internal/metrics` | 99.0% |
-| `internal/resilience` | 89.7% |
-| `internal/cache` | 72.8% |
-| `internal/types` | 68.3% |
+| `internal/config` | 97.5% |
+| `internal/metrics` | 92.6% |
+| `internal/resilience` | 90.1% |
+| `internal/cache` | 53.8% |
+| `internal/types` | 64.9% |
 
 ## Requirements
 
@@ -269,4 +273,4 @@ REDIS_TEST_ADDRESS=localhost:6380 go test ./internal/cache/... -v -run Redis
 
 ## License
 
-Internal use only - Applied Systems, Inc.
+MIT License - See [LICENSE](LICENSE) for details.
