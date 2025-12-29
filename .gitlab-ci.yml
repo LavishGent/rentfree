@@ -5,8 +5,6 @@ stages:
   - integration
 
 variables:
-  # Disable CGO for static binaries
-  CGO_ENABLED: "0"
   # Use Go modules
   GO111MODULE: "on"
 
@@ -58,6 +56,9 @@ lint:
 build:
   <<: *go-template
   stage: build
+  variables:
+    # Disable CGO for static binaries
+    CGO_ENABLED: "0"
   script:
     - go mod download
     - go build -v ./...
