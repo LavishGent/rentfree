@@ -1,0 +1,75 @@
+{
+  "memory": {
+    "enabled": true,
+    "maxSizeMB": 256,
+    "defaultTTL": "5m",
+    "cleanupInterval": "10s",
+    "shards": 1024,
+    "maxEntrySize": 10485760,
+    "hardMaxCacheSize": false
+  },
+  "redis": {
+    "enabled": false,
+    "address": "localhost:6379",
+    "password": "",
+    "db": 0,
+    "keyPrefix": "rentfree:",
+    "defaultTTL": "15m",
+    "poolSize": 100,
+    "minIdleConns": 10,
+    "dialTimeout": "5s",
+    "readTimeout": "3s",
+    "writeTimeout": "3s",
+    "poolTimeout": "4s",
+    "maxPendingWrites": 500,
+    "enableTLS": false,
+    "tlsSkipVerify": false,
+    "healthCheckInterval": "5s"
+  },
+  "defaults": {
+    "ttl": "5m",
+    "level": "memory-then-redis",
+    "priority": "normal",
+    "fireAndForget": false
+  },
+  "circuitBreaker": {
+    "enabled": true,
+    "failureThreshold": 5,
+    "successThreshold": 2,
+    "openDuration": "30s",
+    "halfOpenMaxRequests": 3
+  },
+  "retry": {
+    "enabled": true,
+    "maxAttempts": 3,
+    "initialBackoff": "100ms",
+    "maxBackoff": "2s",
+    "multiplier": 2.0,
+    "jitter": true
+  },
+  "bulkhead": {
+    "enabled": true,
+    "maxConcurrent": 100,
+    "maxQueue": 50,
+    "acquireTimeout": "100ms"
+  },
+  "metrics": {
+    "enabled": true,
+    "publishInterval": "10s",
+    "datadog": {
+      "enabled": false,
+      "agentHost": "127.0.0.1",
+      "port": 8125,
+      "prefix": "rentfree",
+      "tags": [],
+      "publishIntervalSeconds": 30
+    }
+  },
+  "keyValidation": {
+    "enabled": true,
+    "maxKeyLength": 1024,
+    "allowEmpty": false,
+    "allowControlChars": false,
+    "allowWhitespace": true
+  }
+}
