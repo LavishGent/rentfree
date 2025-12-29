@@ -181,9 +181,9 @@ func (b *DisabledBulkhead) ExecuteWithResult(ctx context.Context, fn func(contex
 	return fn(ctx)
 }
 
-func (b *DisabledBulkhead) ActiveCount() int       { return 0 }
-func (b *DisabledBulkhead) QueuedCount() int       { return 0 }
-func (b *DisabledBulkhead) RejectedCount() int64   { return 0 }
-func (b *DisabledBulkhead) TotalExecuted() int64   { return 0 }
-func (b *DisabledBulkhead) AvailableSlots() int    { return 1000000 }
-func (b *DisabledBulkhead) Stats() BulkheadStats   { return BulkheadStats{} }
+func (b *DisabledBulkhead) ActiveCount() int     { return 0 }
+func (b *DisabledBulkhead) QueuedCount() int     { return 0 }
+func (b *DisabledBulkhead) RejectedCount() int64 { return 0 }
+func (b *DisabledBulkhead) TotalExecuted() int64 { return 0 }
+func (b *DisabledBulkhead) AvailableSlots() int  { return 1000000 }
+func (b *DisabledBulkhead) Stats() BulkheadStats { return BulkheadStats{} }

@@ -403,8 +403,8 @@ func TestMemoryCacheStats(t *testing.T) {
 	// Perform operations
 	cache.Set(ctx, "key1", []byte("value1"), nil)
 	cache.Set(ctx, "key2", []byte("value2"), nil)
-	cache.Get(ctx, "key1")        // hit
-	cache.Get(ctx, "key1")        // hit
+	cache.Get(ctx, "key1")         // hit
+	cache.Get(ctx, "key1")         // hit
 	cache.Get(ctx, "non-existent") // miss
 	cache.Delete(ctx, "key1")
 
@@ -466,9 +466,9 @@ func TestMemoryCacheHitRatio(t *testing.T) {
 	t.Run("calculates correctly", func(t *testing.T) {
 		cache.Set(ctx, "key1", []byte("value1"), nil)
 
-		cache.Get(ctx, "key1")        // hit
-		cache.Get(ctx, "key1")        // hit
-		cache.Get(ctx, "key1")        // hit
+		cache.Get(ctx, "key1")         // hit
+		cache.Get(ctx, "key1")         // hit
+		cache.Get(ctx, "key1")         // hit
 		cache.Get(ctx, "non-existent") // miss
 
 		// 3 hits out of 4 = 0.75

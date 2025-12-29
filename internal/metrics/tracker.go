@@ -2,7 +2,7 @@
 package metrics
 
 import (
-	"sort"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -181,9 +181,7 @@ func percentile(durations []time.Duration, p int) time.Duration {
 	// Sort a copy
 	sorted := make([]time.Duration, len(durations))
 	copy(sorted, durations)
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i] < sorted[j]
-	})
+	slices.Sort(sorted)
 
 	idx := (len(sorted) - 1) * p / 100
 	return sorted[idx]

@@ -136,7 +136,7 @@ func (p *DisabledPolicy) ExecuteWithResult(ctx context.Context, fn func(context.
 	return fn(ctx)
 }
 
-func (p *DisabledPolicy) IsCircuitOpen() bool { return false }
-func (p *DisabledPolicy) CircuitState() State { return StateClosed }
-func (p *DisabledPolicy) SetOnCircuitStateChange(fn func(from, to State)) {}
+func (p *DisabledPolicy) IsCircuitOpen() bool                                 { return false }
+func (p *DisabledPolicy) CircuitState() State                                 { return StateClosed }
+func (p *DisabledPolicy) SetOnCircuitStateChange(fn func(from, to State))     {}
 func (p *DisabledPolicy) BulkheadStats() (active, queued int, rejected int64) { return 0, 0, 0 }

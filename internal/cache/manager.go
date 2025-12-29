@@ -781,10 +781,11 @@ func parsePriority(s string) types.CachePriority {
 		return types.PriorityNormal
 	}
 }
+
 type slogAdapter struct {
 	logger types.Logger
 	attrs  []slog.Attr
-	group  string      // current group prefix from WithGroup calls
+	group  string // current group prefix from WithGroup calls
 }
 
 func (a slogAdapter) Enabled(ctx context.Context, level slog.Level) bool {

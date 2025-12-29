@@ -72,8 +72,8 @@ type RedisCacheLayer interface {
 }
 
 type Serializer interface {
-	Marshal(v interface{}) ([]byte, error)
-	Unmarshal(data []byte, dest interface{}) error
+	Marshal(v any) ([]byte, error)
+	Unmarshal(data []byte, dest any) error
 }
 
 type MetricsRecorder interface {

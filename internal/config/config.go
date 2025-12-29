@@ -54,18 +54,18 @@ type MemoryConfig struct {
 }
 
 type RedisConfig struct {
-	Enabled       bool          `json:"enabled"`
-	Address       string        `json:"address"`
-	Password      SecretString  `json:"password"`
-	DB            int           `json:"db"`
-	KeyPrefix     string        `json:"keyPrefix"`
-	DefaultTTL    time.Duration `json:"defaultTTL"`
-	PoolSize      int           `json:"poolSize"`
-	MinIdleConns  int           `json:"minIdleConns"`
-	DialTimeout   time.Duration `json:"dialTimeout"`
-	ReadTimeout   time.Duration `json:"readTimeout"`
-	WriteTimeout  time.Duration `json:"writeTimeout"`
-	PoolTimeout   time.Duration `json:"poolTimeout"`
+	Enabled             bool          `json:"enabled"`
+	Address             string        `json:"address"`
+	Password            SecretString  `json:"password"`
+	DB                  int           `json:"db"`
+	KeyPrefix           string        `json:"keyPrefix"`
+	DefaultTTL          time.Duration `json:"defaultTTL"`
+	PoolSize            int           `json:"poolSize"`
+	MinIdleConns        int           `json:"minIdleConns"`
+	DialTimeout         time.Duration `json:"dialTimeout"`
+	ReadTimeout         time.Duration `json:"readTimeout"`
+	WriteTimeout        time.Duration `json:"writeTimeout"`
+	PoolTimeout         time.Duration `json:"poolTimeout"`
 	MaxPendingWrites    int           `json:"maxPendingWrites"`
 	EnableTLS           bool          `json:"enableTLS"`
 	TLSSkipVerify       bool          `json:"tlsSkipVerify"`

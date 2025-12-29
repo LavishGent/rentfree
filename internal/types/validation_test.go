@@ -137,13 +137,13 @@ func TestKeyValidator_Validate(t *testing.T) {
 		v := NewKeyValidator(DefaultKeyValidationConfig())
 
 		controlChars := []string{
-			"key\x00value",  // null
-			"key\x01value",  // SOH
-			"key\nvalue",    // newline
-			"key\rvalue",    // carriage return
-			"key\tvalue",    // tab
-			"key\x1bvalue",  // escape
-			"key\x7fvalue",  // DEL
+			"key\x00value", // null
+			"key\x01value", // SOH
+			"key\nvalue",   // newline
+			"key\rvalue",   // carriage return
+			"key\tvalue",   // tab
+			"key\x1bvalue", // escape
+			"key\x7fvalue", // DEL
 		}
 
 		for _, key := range controlChars {

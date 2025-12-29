@@ -319,9 +319,9 @@ func TestCircuitBreakerOnStateChange(t *testing.T) {
 	// Trigger state changes
 	cb.RecordFailure() // closed -> open
 	time.Sleep(20 * time.Millisecond)
-	cb.Allow()          // open -> half-open
-	cb.RecordSuccess()  // still half-open
-	cb.RecordSuccess()  // half-open -> closed (default threshold is 2)
+	cb.Allow()         // open -> half-open
+	cb.RecordSuccess() // still half-open
+	cb.RecordSuccess() // half-open -> closed (default threshold is 2)
 
 	// Wait for async callbacks
 	time.Sleep(50 * time.Millisecond)

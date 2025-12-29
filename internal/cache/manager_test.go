@@ -203,7 +203,7 @@ func TestManagerSet(t *testing.T) {
 		t.Skip("Per-entry TTL not supported by bigcache - uses global LifeWindow. " +
 			"This is a known limitation of the memory cache layer. " +
 			"Redis layer supports per-entry TTL correctly.")
-		
+
 		if testing.Short() {
 			t.Skip("skipping TTL test in short mode (timing-dependent)")
 		}
@@ -628,7 +628,7 @@ func TestManagerHealth(t *testing.T) {
 
 		// Add some data
 		m.Set(ctx, "key1", "value1")
-		m.Get(ctx, "key1", new(string))      // Hit
+		m.Get(ctx, "key1", new(string))        // Hit
 		m.Get(ctx, "nonexistent", new(string)) // Miss
 
 		health, err := m.Health(ctx)
@@ -1184,11 +1184,11 @@ func (m *mockSerializer) Unmarshal(data []byte, dest any) error {
 
 // mockMetricsRecorder is a mock metrics recorder for testing.
 type mockMetricsRecorder struct {
-	hits   atomic.Int64
-	misses atomic.Int64
-	sets   atomic.Int64
+	hits    atomic.Int64
+	misses  atomic.Int64
+	sets    atomic.Int64
 	deletes atomic.Int64
-	errors atomic.Int64
+	errors  atomic.Int64
 }
 
 func (m *mockMetricsRecorder) RecordHit(layer, key string, latency time.Duration) {

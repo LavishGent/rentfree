@@ -656,9 +656,9 @@ type trackingPublisher struct {
 	timingCount  atomic.Int64
 }
 
-func (p *trackingPublisher) Gauge(name string, value float64, tags ...string) {}
-func (p *trackingPublisher) Incr(name string, tags ...string)                 {}
-func (p *trackingPublisher) Count(name string, value int64, tags ...string)   {}
+func (p *trackingPublisher) Gauge(name string, value float64, tags ...string)     {}
+func (p *trackingPublisher) Incr(name string, tags ...string)                     {}
+func (p *trackingPublisher) Count(name string, value int64, tags ...string)       {}
 func (p *trackingPublisher) Histogram(name string, value float64, tags ...string) {}
 func (p *trackingPublisher) Timing(name string, duration time.Duration, tags ...string) {
 	p.timingCount.Add(1)

@@ -306,12 +306,12 @@ func (cb *DisabledCircuitBreaker) Execute(fn func() (any, error)) (any, error) {
 	return fn()
 }
 
-func (cb *DisabledCircuitBreaker) Allow() bool            { return true }
-func (cb *DisabledCircuitBreaker) RecordSuccess()         {}
-func (cb *DisabledCircuitBreaker) RecordFailure()         {}
-func (cb *DisabledCircuitBreaker) State() State           { return StateClosed }
-func (cb *DisabledCircuitBreaker) IsOpen() bool           { return false }
-func (cb *DisabledCircuitBreaker) IsClosed() bool         { return true }
-func (cb *DisabledCircuitBreaker) IsHalfOpen() bool       { return false }
-func (cb *DisabledCircuitBreaker) Reset()                 {}
+func (cb *DisabledCircuitBreaker) Allow() bool                              { return true }
+func (cb *DisabledCircuitBreaker) RecordSuccess()                           {}
+func (cb *DisabledCircuitBreaker) RecordFailure()                           {}
+func (cb *DisabledCircuitBreaker) State() State                             { return StateClosed }
+func (cb *DisabledCircuitBreaker) IsOpen() bool                             { return false }
+func (cb *DisabledCircuitBreaker) IsClosed() bool                           { return true }
+func (cb *DisabledCircuitBreaker) IsHalfOpen() bool                         { return false }
+func (cb *DisabledCircuitBreaker) Reset()                                   {}
 func (cb *DisabledCircuitBreaker) SetOnStateChange(fn func(from, to State)) {}
