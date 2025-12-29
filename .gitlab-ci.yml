@@ -12,7 +12,7 @@ variables:
 
 # Template for Go jobs
 .go-template: &go-template
-  image: golang:1.23
+  image: golang:1.24
   before_script:
     - go version
     - go env
@@ -41,17 +41,9 @@ variables:
     expire_in: 1 week
   coverage: '/total:\s+\(statements\)\s+(\d+\.\d+)%/'
 
-test:go1.21:
+test:go1.24:
   extends: .test-template
-  image: golang:1.21
-
-test:go1.22:
-  extends: .test-template
-  image: golang:1.22
-
-test:go1.23:
-  extends: .test-template
-  image: golang:1.23
+  image: golang:1.24
 
 # Linting
 lint:
