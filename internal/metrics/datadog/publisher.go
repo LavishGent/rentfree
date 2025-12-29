@@ -4,6 +4,8 @@ package datadog
 import (
 	"fmt"
 	"log/slog"
+	"net"
+	"strconv"
 	"time"
 
 	"github.com/DataDog/datadog-go/v5/statsd"
@@ -30,7 +32,7 @@ func NewPublisher(cfg *config.DataDogConfig, logger *slog.Logger) (rentfree.Publ
 		logger = slog.Default()
 	}
 
-	addr := fmt.Sprintf("%s:%d", cfg.AgentHost, cfg.Port)
+	addr := net.JoinHostPort(cfg.AgentHost, strconv.Itoa(cfg.Port))
 
 	client, err := statsd.New(addr,
 		statsd.WithNamespace(cfg.Prefix+"."),

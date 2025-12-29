@@ -70,6 +70,7 @@ func NewRedisCache(cfg config.RedisConfig, logger *slog.Logger) (*RedisCache, er
 
 	if cfg.EnableTLS {
 		opts.TLSConfig = &tls.Config{
+			MinVersion:         tls.VersionTLS12,
 			InsecureSkipVerify: cfg.TLSSkipVerify,
 		}
 		if cfg.TLSSkipVerify {

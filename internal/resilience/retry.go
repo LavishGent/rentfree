@@ -2,8 +2,9 @@ package resilience
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/binary"
 	"math"
-	"math/rand"
 	"sync/atomic"
 	"time"
 
@@ -152,11 +153,22 @@ func (rp *RetryPolicy) calculateBackoff(attempt int) time.Duration {
 	// Add jitter (±25%)
 	if rp.jitter {
 		jitterRange := backoff * 0.25
-		jitter := (rand.Float64() * 2 * jitterRange) - jitterRange
+		jitter := (secureRandomFloat64() * 2 * jitterRange) - jitterRange
 		backoff += jitter
 	}
 
 	return time.Duration(backoff)
+}
+
+// secureRandomFloat64 generates a cryptographically secure random float64 in [0, 1).
+func secureRandomFloat64() float64 {
+	var b [8]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		// Fallback to 0.5 if random generation fails (should be extremely rare)
+		return 0.5
+	}
+	// Convert to uint64 and scale to [0, 1)
+	return float64(binary.BigEndian.Uint64(b[:])) / float64(1<<64)
 }
 
 // Stats returns retry statistics.
