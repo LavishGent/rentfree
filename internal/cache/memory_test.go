@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/darrell-green/rentfree/internal/config"
-	"github.com/darrell-green/rentfree/internal/types"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
 )
 
 func testMemoryConfig() config.MemoryConfig {

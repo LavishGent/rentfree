@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/darrell-green/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
 )
 
 func testConfig() config.Config {

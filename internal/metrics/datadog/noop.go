@@ -3,7 +3,7 @@ package datadog
 import (
 	"time"
 
-	"github.com/darrell-green/rentfree/pkg/rentfree"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 // NoOpPublisher is a Publisher that does nothing.

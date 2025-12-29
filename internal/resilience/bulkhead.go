@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/darrell-green/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
 )
 
 type Bulkhead struct {

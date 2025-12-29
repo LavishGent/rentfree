@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/darrell-green/rentfree/internal/config"
-	"github.com/darrell-green/rentfree/internal/types"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
 )
 
 // =============================================================================

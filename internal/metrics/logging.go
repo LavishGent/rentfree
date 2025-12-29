@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/darrell-green/rentfree/pkg/rentfree"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 // LoggingPublisher logs metrics using slog.

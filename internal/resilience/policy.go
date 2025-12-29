@@ -3,7 +3,7 @@ package resilience
 import (
 	"context"
 
-	"github.com/darrell-green/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
 )
 
 type Policy struct {

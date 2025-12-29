@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/DataDog/datadog-go/v5/statsd"
-	"github.com/darrell-green/rentfree/internal/config"
-	"github.com/darrell-green/rentfree/pkg/rentfree"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 // Publisher implements rentfree.Publisher using the DataDog StatsD client.

@@ -8,8 +8,8 @@ import (
 
 	"github.com/allegro/bigcache/v3"
 
-	"github.com/darrell-green/rentfree/internal/config"
-	"github.com/darrell-green/rentfree/internal/types"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
 )
 
 type MemoryCache struct {

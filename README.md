@@ -47,7 +47,7 @@ When Redis goes down, the circuit breaker opens and traffic falls back to memory
 ### Installation
 
 ```bash
-go get github.com/darrell-green/rentfree
+go get gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree
 ```
 
 ### Basic Usage
@@ -59,7 +59,7 @@ import (
     "context"
     "fmt"
 
-    "github.com/darrell-green/rentfree/pkg/rentfree"
+    "gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 type User struct {

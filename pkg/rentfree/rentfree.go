@@ -1,8 +1,8 @@
 package rentfree
 
 import (
-	"github.com/darrell-green/rentfree/internal/cache"
-	"github.com/darrell-green/rentfree/internal/config"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/cache"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
 )
 
 // New creates a new cache manager with default configuration.

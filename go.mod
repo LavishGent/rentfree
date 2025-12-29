@@ -1,4 +1,4 @@
-module github.com/darrell-green/rentfree
+module gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree
 
 go 1.24.0
 

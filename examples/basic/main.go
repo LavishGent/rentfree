@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/darrell-green/rentfree/pkg/rentfree"
+	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 // User represents a sample data type to cache.

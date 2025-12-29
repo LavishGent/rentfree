@@ -38,5 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Core caching functionality stable
 - Ready for developer feedback and testing
 
-[Unreleased]: https://github.com/darrell-green/rentfree/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/darrell-green/rentfree/releases/tag/v0.1.0
+[Unreleased]: https://gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/-/compare/v0.1.0...HEAD
+[0.1.0]: https://gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/-/tags/v0.1.0

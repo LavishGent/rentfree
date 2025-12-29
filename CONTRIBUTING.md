@@ -14,7 +14,7 @@ Thank you for your interest in contributing to rentfree! This document provides 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/darrell-green/rentfree.git
+   git clone https://gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree.git
    cd rentfree
    ```
 
