@@ -311,11 +311,11 @@ func TestRetryPolicyStats(t *testing.T) {
 	rp := NewRetryPolicy(cfg)
 
 	// Success on first try
-	rp.Execute(func() error { return nil })
+	_ = rp.Execute(func() error { return nil })
 
 	// Success after retry
 	attempts := 0
-	rp.Execute(func() error {
+	_ = rp.Execute(func() error {
 		attempts++
 		if attempts < 2 {
 			return &retryableError{errors.New("fail")}
@@ -324,7 +324,7 @@ func TestRetryPolicyStats(t *testing.T) {
 	})
 
 	// Failure after all retries
-	rp.Execute(func() error {
+	_ = rp.Execute(func() error {
 		return &retryableError{errors.New("always fail")}
 	})
 

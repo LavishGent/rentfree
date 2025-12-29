@@ -98,7 +98,7 @@ func TestBulkheadConcurrencyLimit(t *testing.T) {
 		// Launch exactly max concurrent operations
 		for i := 0; i < 3; i++ {
 			go func() {
-				b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+				_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 					current := activeCount.Add(1)
 					// Track max concurrent
 					for {
@@ -147,7 +147,7 @@ func TestBulkheadConcurrencyLimit(t *testing.T) {
 
 		for i := 0; i < 3; i++ {
 			go func() {
-				b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+				_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 					started <- struct{}{}
 					<-blocking
 					return nil
@@ -187,7 +187,7 @@ func TestBulkheadQueue(t *testing.T) {
 		release := make(chan struct{})
 
 		go func() {
-			b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+			_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 				started <- struct{}{}
 				<-release
 				return nil
@@ -389,7 +389,7 @@ func TestBulkheadStats(t *testing.T) {
 
 	// Execute some operations
 	for i := 0; i < 10; i++ {
-		b.Execute(func() error { return nil })
+		_ = b.Execute(func() error { return nil })
 	}
 
 	stats := b.Stats()
@@ -436,7 +436,7 @@ func TestBulkheadRejectedCount(t *testing.T) {
 
 	// Try to execute more (should be rejected since all slots are full)
 	for i := 0; i < 5; i++ {
-		b.Execute(func() error { return nil })
+		_ = b.Execute(func() error { return nil })
 	}
 
 	close(blocking)

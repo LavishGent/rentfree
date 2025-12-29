@@ -158,7 +158,7 @@ func (c *MemoryCache) ClearByPattern(ctx context.Context, pattern string) error 
 	}
 
 	for _, key := range keysToDelete {
-		c.cache.Delete(key)
+		_ = c.cache.Delete(key)
 	}
 
 	c.logger.Debug("Cleared entries by pattern",

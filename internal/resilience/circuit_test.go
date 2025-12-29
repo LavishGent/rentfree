@@ -273,7 +273,7 @@ func TestCircuitBreakerExecute(t *testing.T) {
 		cb.RecordFailure()
 
 		// Execute success should reset
-		cb.Execute(func() (any, error) {
+		_, _ = cb.Execute(func() (any, error) {
 			return nil, nil
 		})
 
@@ -289,7 +289,7 @@ func TestCircuitBreakerExecute(t *testing.T) {
 		}
 		cb := NewCircuitBreaker(cfg)
 
-		cb.Execute(func() (any, error) {
+		_, _ = cb.Execute(func() (any, error) {
 			return nil, errors.New("test error")
 		})
 

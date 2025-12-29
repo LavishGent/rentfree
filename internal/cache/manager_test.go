@@ -259,7 +259,7 @@ func TestManagerDelete(t *testing.T) {
 		defer m.Close()
 
 		// Set then delete
-		m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key1", "value1")
 		err := m.Delete(ctx, "key1")
 		if err != nil {
 			t.Fatalf("Delete failed: %v", err)
@@ -303,9 +303,9 @@ func TestManagerDeleteMany(t *testing.T) {
 		defer m.Close()
 
 		// Set multiple keys
-		m.Set(ctx, "key1", "value1")
-		m.Set(ctx, "key2", "value2")
-		m.Set(ctx, "key3", "value3")
+		_ = m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key2", "value2")
+		_ = m.Set(ctx, "key3", "value3")
 
 		// Delete two of them
 		err := m.DeleteMany(ctx, []string{"key1", "key2"})
@@ -627,9 +627,9 @@ func TestManagerHealth(t *testing.T) {
 		defer m.Close()
 
 		// Add some data
-		m.Set(ctx, "key1", "value1")
-		m.Get(ctx, "key1", new(string))        // Hit
-		m.Get(ctx, "nonexistent", new(string)) // Miss
+		_ = m.Set(ctx, "key1", "value1")
+		_ = m.Get(ctx, "key1", new(string))        // Hit
+		_ = m.Get(ctx, "nonexistent", new(string)) // Miss
 
 		health, err := m.Health(ctx)
 		if err != nil {
@@ -815,7 +815,7 @@ func TestManagerClose(t *testing.T) {
 		<-started
 
 		// Close triggers context cancellation
-		m.CloseWithTimeout(100 * time.Millisecond)
+		_ = m.CloseWithTimeout(100 * time.Millisecond)
 
 		if !ctxWasCancelled.Load() {
 			t.Error("Background operation should have received cancelled context")
@@ -1231,14 +1231,14 @@ func TestManagerWithMetrics(t *testing.T) {
 		defer m.Close()
 
 		// Set a value
-		m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key1", "value1")
 
 		// Get it (hit)
 		var result string
-		m.Get(ctx, "key1", &result)
+		_ = m.Get(ctx, "key1", &result)
 
 		// Get non-existent (miss)
-		m.Get(ctx, "nonexistent", &result)
+		_ = m.Get(ctx, "nonexistent", &result)
 
 		// Check metrics
 		if metrics.sets.Load() != 1 {
@@ -1321,7 +1321,7 @@ func BenchmarkManagerGetOrCreate(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var result string
-		m.GetOrCreate(ctx, "benchmark_key", &result, func() (any, error) {
+		_ = m.GetOrCreate(ctx, "benchmark_key", &result, func() (any, error) {
 			return "value", nil
 		})
 	}

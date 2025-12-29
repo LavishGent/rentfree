@@ -157,7 +157,7 @@ func TestPolicyCircuitBreakerIntegration(t *testing.T) {
 
 		// Cause failures to open circuit
 		for i := 0; i < 3; i++ {
-			p.Execute(context.Background(), func(ctx context.Context) error {
+			_ = p.Execute(context.Background(), func(ctx context.Context) error {
 				return errors.New("failure")
 			})
 		}
@@ -186,7 +186,7 @@ func TestPolicyCircuitBreakerIntegration(t *testing.T) {
 
 		// Open the circuit
 		for i := 0; i < 2; i++ {
-			p.Execute(context.Background(), func(ctx context.Context) error {
+			_ = p.Execute(context.Background(), func(ctx context.Context) error {
 				return errors.New("failure")
 			})
 		}
@@ -230,7 +230,7 @@ func TestPolicyBulkheadIntegration(t *testing.T) {
 
 		for i := 0; i < 3; i++ {
 			go func() {
-				p.Execute(context.Background(), func(ctx context.Context) error {
+				_ = p.Execute(context.Background(), func(ctx context.Context) error {
 					started <- struct{}{}
 					<-blocking
 					return nil

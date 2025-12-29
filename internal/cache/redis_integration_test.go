@@ -18,13 +18,6 @@ import (
 // Test Option Helpers (to avoid importing pkg/rentfree in internal tests)
 // =============================================================================
 
-// withLevel returns an option that sets the cache level.
-func withLevel(level types.CacheLevel) types.Option {
-	return func(o *types.CacheOptions) {
-		o.Level = level
-	}
-}
-
 // withMemoryOnly returns an option for memory-only operations.
 func withMemoryOnly() types.Option {
 	return func(o *types.CacheOptions) {
@@ -86,7 +79,7 @@ func skipIfRedisUnavailable(t *testing.T) *RedisCache {
 
 	// Clean up test keys before running tests
 	ctx := context.Background()
-	rc.Clear(ctx)
+	_ = rc.Clear(ctx)
 
 	return rc
 }
@@ -113,7 +106,7 @@ func newTestManagerWithRedis(t *testing.T) *Manager {
 
 	// Clean up test keys
 	ctx := context.Background()
-	mgr.Clear(ctx, types.LevelAll)
+	_ = mgr.Clear(ctx, types.LevelAll)
 
 	return mgr
 }
@@ -473,9 +466,9 @@ func TestRedisCacheConcurrency(t *testing.T) {
 
 					// Mix of reads and writes
 					if j%2 == 0 {
-						rc.Get(ctx, key)
+						_, _ = rc.Get(ctx, key)
 					} else {
-						rc.Set(ctx, key, []byte("updated"), nil)
+						_ = rc.Set(ctx, key, []byte("updated"), nil)
 					}
 				}
 			}(i)
@@ -858,11 +851,11 @@ func BenchmarkRedisCacheGet(b *testing.B) {
 	key := "bench-key"
 	value := []byte(`{"id":123,"name":"benchmark test","data":"some test data for benchmarking"}`)
 
-	rc.Set(ctx, key, value, nil)
+	_ = rc.Set(ctx, key, value, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		rc.Get(ctx, key)
+		_, _ = rc.Get(ctx, key)
 	}
 }
 
@@ -893,7 +886,7 @@ func BenchmarkRedisCacheSet(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		key := "bench-set-" + string(rune(i%26+'a'))
-		rc.Set(ctx, key, value, nil)
+		_ = rc.Set(ctx, key, value, nil)
 	}
 }
 
@@ -950,7 +943,7 @@ func BenchmarkManagerWithRedisConcurrent(b *testing.B) {
 	// Pre-populate some keys
 	for i := 0; i < 100; i++ {
 		key := "bench-concurrent-" + string(rune(i%26+'a'))
-		mgr.Set(ctx, key, "benchmark-value")
+		_ = mgr.Set(ctx, key, "benchmark-value")
 	}
 
 	b.ResetTimer()
@@ -960,9 +953,9 @@ func BenchmarkManagerWithRedisConcurrent(b *testing.B) {
 			key := "bench-concurrent-" + string(rune(i%26+'a'))
 			if i%2 == 0 {
 				var result string
-				mgr.Get(ctx, key, &result)
+				_ = mgr.Get(ctx, key, &result)
 			} else {
-				mgr.Set(ctx, key, "updated-value")
+				_ = mgr.Set(ctx, key, "updated-value")
 			}
 			i++
 		}

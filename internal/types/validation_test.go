@@ -338,7 +338,7 @@ func BenchmarkKeyValidator_Validate(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		v.Validate(key)
+		_ = v.Validate(key)
 	}
 }
 
@@ -349,7 +349,7 @@ func BenchmarkKeyValidator_ValidateLongKey(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		v.Validate(key)
+		_ = v.Validate(key)
 	}
 }
 
@@ -360,7 +360,7 @@ func BenchmarkKeyValidator_ValidateUnicode(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		v.Validate(key)
+		_ = v.Validate(key)
 	}
 }
 

@@ -100,7 +100,7 @@ func TestMemoryCacheGet(t *testing.T) {
 
 		// Set a value first
 		value := []byte("test value")
-		cache.Set(ctx, "key1", value, nil)
+		_ = cache.Set(ctx, "key1", value, nil)
 
 		got, err := cache.Get(ctx, "key1")
 		if err != nil {
@@ -125,12 +125,12 @@ func TestMemoryCacheGet(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value"), nil)
 
-		cache.Get(ctx, "key1")       // hit
-		cache.Get(ctx, "key1")       // hit
-		cache.Get(ctx, "non-exist")  // miss
-		cache.Get(ctx, "non-exist2") // miss
+		_, _ = cache.Get(ctx, "key1")       // hit
+		_, _ = cache.Get(ctx, "key1")       // hit
+		_, _ = cache.Get(ctx, "non-exist")  // miss
+		_, _ = cache.Get(ctx, "non-exist2") // miss
 
 		stats := cache.Stats()
 		if stats.Hits != 2 {
@@ -167,8 +167,8 @@ func TestMemoryCacheSet(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
-		cache.Set(ctx, "key1", []byte("value2"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value2"), nil)
 
 		got, _ := cache.Get(ctx, "key1")
 		if string(got) != "value2" {
@@ -245,9 +245,9 @@ func TestMemoryCacheDelete(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
-		cache.Delete(ctx, "key1")
-		cache.Delete(ctx, "key2") // non-existent
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Delete(ctx, "key1")
+		_ = cache.Delete(ctx, "key2") // non-existent
 
 		stats := cache.Stats()
 		if stats.Deletes != 2 {
@@ -401,12 +401,12 @@ func TestMemoryCacheStats(t *testing.T) {
 	defer cache.Close()
 
 	// Perform operations
-	cache.Set(ctx, "key1", []byte("value1"), nil)
-	cache.Set(ctx, "key2", []byte("value2"), nil)
-	cache.Get(ctx, "key1")         // hit
-	cache.Get(ctx, "key1")         // hit
-	cache.Get(ctx, "non-existent") // miss
-	cache.Delete(ctx, "key1")
+	_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+	_ = cache.Set(ctx, "key2", []byte("value2"), nil)
+	_, _ = cache.Get(ctx, "key1")         // hit
+	_, _ = cache.Get(ctx, "key1")         // hit
+	_, _ = cache.Get(ctx, "non-existent") // miss
+	_ = cache.Delete(ctx, "key1")
 
 	stats := cache.Stats()
 	if stats.Sets != 2 {
