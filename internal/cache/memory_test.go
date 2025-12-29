@@ -208,7 +208,7 @@ func TestMemoryCacheDelete(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
 
 		err := cache.Delete(ctx, "key1")
 		if err != nil {
@@ -263,7 +263,7 @@ func TestMemoryCacheContains(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
 
 		exists, err := cache.Contains(ctx, "key1")
 		if err != nil {
@@ -337,9 +337,9 @@ func TestMemoryCacheClearByPattern(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "user:1", []byte("data1"), nil)
-		cache.Set(ctx, "user:2", []byte("data2"), nil)
-		cache.Set(ctx, "session:1", []byte("sess1"), nil)
+		_ = cache.Set(ctx, "user:1", []byte("data1"), nil)
+		_ = cache.Set(ctx, "user:2", []byte("data2"), nil)
+		_ = cache.Set(ctx, "session:1", []byte("sess1"), nil)
 
 		err := cache.ClearByPattern(ctx, "user:*")
 		if err != nil {

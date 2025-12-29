@@ -565,9 +565,9 @@ func TestManagerClear(t *testing.T) {
 		defer m.Close()
 
 		// Set some values
-		m.Set(ctx, "key1", "value1")
-		m.Set(ctx, "key2", "value2")
-		m.Set(ctx, "key3", "value3")
+		_ = m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key2", "value2")
+		_ = m.Set(ctx, "key3", "value3")
 
 		// Clear
 		err := m.Clear(ctx, types.LevelMemoryOnly)

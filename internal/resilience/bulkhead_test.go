@@ -424,7 +424,7 @@ func TestBulkheadRejectedCount(t *testing.T) {
 
 	for i := 0; i < 2; i++ {
 		go func() {
-			b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+			_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 				started <- struct{}{}
 				<-blocking
 				return nil
