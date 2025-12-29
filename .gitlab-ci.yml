@@ -1,0 +1,107 @@
+stages:
+  - test
+  - lint
+  - build
+  - integration
+
+variables:
+  # Disable CGO for static binaries
+  CGO_ENABLED: "0"
+  # Use Go modules
+  GO111MODULE: "on"
+
+# Template for Go jobs
+.go-template: &go-template
+  image: golang:1.23
+  before_script:
+    - go version
+    - go env
+    - mkdir -p $GOPATH/pkg/mod
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-go
+    paths:
+      - .go/pkg/mod/
+
+# Test with multiple Go versions
+.test-template:
+  <<: *go-template
+  stage: test
+  script:
+    - go mod download
+    - go mod verify
+    - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+    - go tool cover -func=coverage.txt
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.txt
+    paths:
+      - coverage.txt
+    expire_in: 1 week
+  coverage: '/total:\s+\(statements\)\s+(\d+\.\d+)%/'
+
+test:go1.21:
+  extends: .test-template
+  image: golang:1.21
+
+test:go1.22:
+  extends: .test-template
+  image: golang:1.22
+
+test:go1.23:
+  extends: .test-template
+  image: golang:1.23
+
+# Linting
+lint:
+  <<: *go-template
+  stage: lint
+  script:
+    - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    - golangci-lint run --timeout=5m
+  allow_failure: false
+
+# Build
+build:
+  <<: *go-template
+  stage: build
+  script:
+    - go mod download
+    - go build -v ./...
+    - echo "Building examples..."
+    - cd examples/basic
+    - go build -v .
+  artifacts:
+    paths:
+      - examples/basic/basic
+    expire_in: 1 week
+
+# Integration tests with Redis
+integration:
+  <<: *go-template
+  stage: integration
+  services:
+    - name: redis:alpine
+      alias: redis
+  variables:
+    REDIS_TEST_ADDRESS: "redis:6379"
+  script:
+    - go mod download
+    - go test -v -run "Redis|Integration" ./internal/cache/...
+  allow_failure: false
+
+# Optional: Generate and publish documentation
+pages:
+  <<: *go-template
+  stage: build
+  script:
+    - go install golang.org/x/tools/cmd/godoc@latest
+    - mkdir -p public
+    - echo "Documentation will be available at GitLab Pages"
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+  when: manual
