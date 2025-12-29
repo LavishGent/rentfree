@@ -1,93 +1,276 @@
 # rentfree
 
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)](https://goreportcard.com/report/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)
 
+A production-ready, multi-layer caching library for Go applications with minimal dependencies.
 
-## Getting started
+## Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- **Unified API** - Single interface for all caching operations
+- **Multi-backend Support** - In-memory (bigcache) and Redis with intelligent fallback
+- **Resilience Patterns** - Custom circuit breaker, retry with exponential backoff, and bulkhead
+- **Observability** - Metrics tracking with pluggable publishers (logging, custom)
+- **Graceful Degradation** - Continues working when Redis fails, falling back to memory cache
+- **Cache-Aside Pattern** - Built-in `GetOrCreate` for lazy loading with factory functions
+- **Minimal Dependencies** - Only bigcache and go-redis, no external config or metrics frameworks
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Architecture
 
-## Add your files
+```mermaid
+flowchart TB
+    App[Your Application] --> Manager[Cache Manager]
+    Manager --> Memory[(Memory Cache<br/>bigcache)]
+    Manager --> Resilience{Resilience Layer}
+    Resilience --> Redis[(Redis<br/>go-redis)]
+    Resilience -.->|circuit open| Memory
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+    subgraph Resilience Layer
+        CB[Circuit Breaker]
+        Retry[Retry w/ Backoff]
+        BH[Bulkhead]
+    end
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree.git
-git branch -M main
-git push -uf origin main
+
+When Redis goes down, the circuit breaker opens and traffic falls back to memory-only until Redis recovers.
+
+## Cache Levels
+
+| Level | Memory | Redis | Use Case |
+|-------|--------|-------|----------|
+| `MemoryOnly` | Yes | No | High-frequency reads, session data |
+| `RedisOnly` | No | Yes | Shared state across instances |
+| `MemoryThenRedis` | Yes (L1) | Yes (L2) | Optimal performance with distribution |
+| `All` | Yes | Yes | Maximum availability |
+
+**Note:** Memory cache (bigcache) uses a global TTL (LifeWindow) for all entries. Per-entry TTL via `WithTTL()` only applies to the Redis layer. When using `MemoryOnly` mode, all entries will expire based on the configured `defaultTTL` in the memory config.
+
+## Quick Start
+
+### Installation
+
+```bash
+go get gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree
 ```
 
-## Integrate with your tools
+### Basic Usage
 
-* [Set up project integrations](https://gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/-/settings/integrations)
+```go
+package main
 
-## Collaborate with your team
+import (
+    "context"
+    "fmt"
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+    "gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
+)
 
-## Test and Deploy
+type User struct {
+    ID   string
+    Name string
+}
 
-Use the built-in continuous integration in GitLab.
+func main() {
+    // Create cache manager with defaults (memory-only)
+    manager, err := rentfree.New()
+    if err != nil {
+        panic(err)
+    }
+    defer manager.Close()
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+    ctx := context.Background()
 
-***
+    // Simple set/get
+    user := User{ID: "123", Name: "Alice"}
+    _ = manager.Set(ctx, "user:123", user)
 
-# Editing this README
+    var cached User
+    _ = manager.Get(ctx, "user:123", &cached)
+    fmt.Printf("Got user: %+v\n", cached)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+    // Cache-aside pattern with factory
+    var result User
+    _ = manager.GetOrCreate(ctx, "user:456", &result, func() (any, error) {
+        // This only runs on cache miss
+        return User{ID: "456", Name: "Bob"}, nil
+    })
+}
+```
 
-## Suggestions for a good README
+### With Redis
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```go
+// Load from config file with environment variable overrides
+manager, err := rentfree.NewFromFile("config.json")
 
-## Name
-Choose a self-explaining name for your project.
+// Or configure programmatically
+cfg := rentfree.Config()
+cfg.Redis.Enabled = true
+cfg.Redis.Address = "localhost:6379"
+manager, err := rentfree.NewFromConfig(cfg)
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+// Or use functional options
+manager, err := rentfree.New(
+    rentfree.WithRedisAddress("localhost:6379"),
+)
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Configuration
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Configuration is loaded from JSON files with environment variable overrides:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```json
+{
+  "memory": {
+    "enabled": true,
+    "maxSizeMB": 256,
+    "defaultTTL": "5m",
+    "cleanupInterval": "10s",
+    "shards": 1024,
+    "maxEntrySize": 10485760
+  },
+  "redis": {
+    "enabled": true,
+    "address": "localhost:6379",
+    "password": "",
+    "db": 0,
+    "keyPrefix": "rentfree:",
+    "defaultTTL": "15m",
+    "poolSize": 100
+  },
+  "circuitBreaker": {
+    "enabled": true,
+    "failureThreshold": 5,
+    "successThreshold": 2,
+    "openDuration": "30s",
+    "halfOpenMaxRequests": 3
+  },
+  "retry": {
+    "enabled": true,
+    "maxAttempts": 3,
+    "initialBackoff": "100ms",
+    "maxBackoff": "2s",
+    "multiplier": 2.0,
+    "jitter": true
+  },
+  "bulkhead": {
+    "enabled": true,
+    "maxConcurrent": 100,
+    "maxQueue": 50,
+    "acquireTimeout": "100ms"
+  },
+  "metrics": {
+    "enabled": true,
+    "publishInterval": "10s"
+  }
+}
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Environment variables override JSON values (prefix: `RENTFREE_`):
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```bash
+export RENTFREE_REDIS_ADDRESS="redis.prod.internal:6379"
+export RENTFREE_REDIS_PASSWORD="secret"
+export RENTFREE_REDIS_ENABLED="true"
+export RENTFREE_BULKHEAD_MAX_CONCURRENT="200"
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Project Structure
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```text
+rentfree/
+├── examples/
+│   └── basic/              # Example application
+├── internal/
+│   ├── cache/              # Cache implementations (memory, redis, manager)
+│   ├── config/             # Configuration loading and validation
+│   ├── metrics/            # Metrics tracking and publishing
+│   ├── resilience/         # Circuit breaker, retry, bulkhead
+│   └── types/              # Shared types and errors
+├── pkg/
+│   └── rentfree/           # Public API types
+├── go.mod
+├── go.sum
+└── README.md
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Dependencies
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+| Library | Purpose |
+|---------|---------|
+| `allegro/bigcache/v3` | Zero-GC in-memory cache |
+| `redis/go-redis/v9` | Redis client |
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+No external dependencies for configuration, circuit breaker, or metrics - all implemented in-house using the Go standard library.
+
+## Metrics
+
+The library tracks the following metrics internally:
+
+| Metric | Type | Description |
+|--------|------|-------------|
+| Memory/Redis Hits | Counter | Cache hit count by layer |
+| Memory/Redis Misses | Counter | Cache miss count by layer |
+| Get/Set/Delete Count | Counter | Operation counts |
+| Error Count | Counter | Total error count |
+| Latency Percentiles | Gauge | p50, p95, p99 latency |
+
+Metrics can be published via:
+- `LoggingPublisher` - Logs metrics using `slog`
+- `NoOpPublisher` - For testing
+- Custom publishers implementing `MetricsPublisher` interface
+
+## Test Coverage
+
+| Package | Coverage |
+|---------|----------|
+| `internal/config` | 97.5% |
+| `internal/metrics` | 92.6% |
+| `internal/resilience` | 90.1% |
+| `internal/cache` | 53.8% |
+| `internal/types` | 64.9% |
+
+## Requirements
+
+- Go 1.21+ (for `log/slog` and latest generics)
+- Redis (optional, for distributed caching)
+
+## Development
+
+### Running Redis for Testing
+
+Start a Redis instance using Docker (use `linux/arm64` for Apple Silicon Macs, `linux/amd64` for Intel):
+
+```bash
+docker run -d -p 6379:6379 --platform linux/arm64 redis:alpine
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run tests with verbose output
+go test ./... -v
+
+# Run tests with coverage
+go test ./... -cover
+
+# Run Redis integration tests (requires Redis)
+go test ./internal/cache/... -v -run "Redis|Graceful"
+
+# Run benchmarks
+go test ./internal/cache/... -bench=. -benchtime=1s -run=^$
+```
+
+To use a custom Redis address for tests:
+
+```bash
+REDIS_TEST_ADDRESS=localhost:6380 go test ./internal/cache/... -v -run Redis
+```
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+MIT License - See [LICENSE](LICENSE) for details.
