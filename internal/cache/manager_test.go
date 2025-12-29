@@ -594,9 +594,9 @@ func TestManagerClearByPattern(t *testing.T) {
 		defer m.Close()
 
 		// Set values with different prefixes
-		m.Set(ctx, "user:1", "alice")
-		m.Set(ctx, "user:2", "bob")
-		m.Set(ctx, "product:1", "widget")
+		_ = m.Set(ctx, "user:1", "alice")
+		_ = m.Set(ctx, "user:2", "bob")
+		_ = m.Set(ctx, "product:1", "widget")
 
 		// Clear only user keys
 		err := m.ClearByPattern(ctx, "user:*", types.LevelMemoryOnly)

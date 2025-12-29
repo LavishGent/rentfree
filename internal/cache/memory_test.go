@@ -432,8 +432,8 @@ func TestMemoryCacheEntryCount(t *testing.T) {
 		t.Errorf("initial EntryCount() = %d, want 0", count)
 	}
 
-	cache.Set(ctx, "key1", []byte("value1"), nil)
-	cache.Set(ctx, "key2", []byte("value2"), nil)
+	_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+	_ = cache.Set(ctx, "key2", []byte("value2"), nil)
 
 	if count := cache.EntryCount(); count != 2 {
 		t.Errorf("EntryCount() = %d, want 2", count)
