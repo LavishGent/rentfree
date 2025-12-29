@@ -1267,7 +1267,7 @@ func TestSerializationErrors(t *testing.T) {
 		defer m.Close()
 
 		// Set a value
-		m.Set(ctx, "key1", "string_value")
+		_ = m.Set(ctx, "key1", "string_value")
 
 		// Try to unmarshal into incompatible type
 		var result int
@@ -1306,7 +1306,7 @@ func BenchmarkManagerSet(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.Set(ctx, "benchmark_key", i)
+		_ = m.Set(ctx, "benchmark_key", i)
 	}
 }
 
@@ -1334,7 +1334,7 @@ func BenchmarkManagerConcurrent(b *testing.B) {
 	defer m.Close()
 
 	ctx := context.Background()
-	m.Set(ctx, "concurrent_key", "value")
+	_ = m.Set(ctx, "concurrent_key", "value")
 
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
