@@ -345,8 +345,8 @@ func TestRetryPolicyReset(t *testing.T) {
 	rp := NewRetryPolicy(config.RetryConfig{MaxAttempts: 3})
 
 	// Accumulate some stats
-	rp.Execute(func() error { return nil })
-	rp.Execute(func() error { return nil })
+	_ = rp.Execute(func() error { return nil })
+	_ = rp.Execute(func() error { return nil })
 
 	// Reset
 	rp.Reset()

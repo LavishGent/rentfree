@@ -345,7 +345,7 @@ func TestManagerContains(t *testing.T) {
 		m := newTestManager(t)
 		defer m.Close()
 
-		m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key1", "value1")
 
 		exists, err := m.Contains(ctx, "key1")
 		if err != nil {
@@ -379,7 +379,7 @@ func TestManagerGetOrCreate(t *testing.T) {
 		defer m.Close()
 
 		// Pre-populate cache
-		m.Set(ctx, "key1", "cached_value")
+		_ = m.Set(ctx, "key1", "cached_value")
 
 		factoryCalled := false
 		var result string
@@ -479,8 +479,8 @@ func TestManagerGetMany(t *testing.T) {
 		defer m.Close()
 
 		// Set some values (need to set raw bytes directly for GetMany)
-		m.Set(ctx, "key1", "value1")
-		m.Set(ctx, "key2", "value2")
+		_ = m.Set(ctx, "key1", "value1")
+		_ = m.Set(ctx, "key2", "value2")
 
 		results, err := m.GetMany(ctx, []string{"key1", "key2", "nonexistent"})
 		if err != nil {
@@ -1287,12 +1287,12 @@ func BenchmarkManagerGet(b *testing.B) {
 	defer m.Close()
 
 	ctx := context.Background()
-	m.Set(ctx, "benchmark_key", "benchmark_value")
+	_ = m.Set(ctx, "benchmark_key", "benchmark_value")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var result string
-		m.Get(ctx, "benchmark_key", &result)
+		_ = m.Get(ctx, "benchmark_key", &result)
 	}
 }
 
@@ -1340,7 +1340,7 @@ func BenchmarkManagerConcurrent(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var result string
 		for pb.Next() {
-			m.Get(ctx, "concurrent_key", &result)
+			_ = m.Get(ctx, "concurrent_key", &result)
 		}
 	})
 }

@@ -190,9 +190,9 @@ func TestMemoryCacheSet(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
-		cache.Set(ctx, "key2", []byte("value2"), nil)
-		cache.Set(ctx, "key3", []byte("value3"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key2", []byte("value2"), nil)
+		_ = cache.Set(ctx, "key3", []byte("value3"), nil)
 
 		stats := cache.Stats()
 		if stats.Sets != 3 {
@@ -305,9 +305,9 @@ func TestMemoryCacheClear(t *testing.T) {
 		cache, _ := NewMemoryCache(testMemoryConfig(), nil)
 		defer cache.Close()
 
-		cache.Set(ctx, "key1", []byte("value1"), nil)
-		cache.Set(ctx, "key2", []byte("value2"), nil)
-		cache.Set(ctx, "key3", []byte("value3"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key2", []byte("value2"), nil)
+		_ = cache.Set(ctx, "key3", []byte("value3"), nil)
 
 		err := cache.Clear(ctx)
 		if err != nil {
@@ -464,12 +464,12 @@ func TestMemoryCacheHitRatio(t *testing.T) {
 	})
 
 	t.Run("calculates correctly", func(t *testing.T) {
-		cache.Set(ctx, "key1", []byte("value1"), nil)
+		_ = cache.Set(ctx, "key1", []byte("value1"), nil)
 
-		cache.Get(ctx, "key1")         // hit
-		cache.Get(ctx, "key1")         // hit
-		cache.Get(ctx, "key1")         // hit
-		cache.Get(ctx, "non-existent") // miss
+		_, _ = cache.Get(ctx, "key1")         // hit
+		_, _ = cache.Get(ctx, "key1")         // hit
+		_, _ = cache.Get(ctx, "key1")         // hit
+		_, _ = cache.Get(ctx, "non-existent") // miss
 
 		// 3 hits out of 4 = 0.75
 		ratio := cache.HitRatio()

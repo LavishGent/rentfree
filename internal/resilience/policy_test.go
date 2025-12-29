@@ -283,7 +283,7 @@ func TestPolicySetOnCircuitStateChange(t *testing.T) {
 	})
 
 	// Trigger state change
-	p.Execute(context.Background(), func(ctx context.Context) error {
+	_ = p.Execute(context.Background(), func(ctx context.Context) error {
 		return errors.New("failure")
 	})
 
@@ -304,7 +304,7 @@ func TestPolicyBulkheadStats(t *testing.T) {
 
 	// Execute some operations
 	for i := 0; i < 5; i++ {
-		p.Execute(context.Background(), func(ctx context.Context) error {
+		_ = p.Execute(context.Background(), func(ctx context.Context) error {
 			return nil
 		})
 	}

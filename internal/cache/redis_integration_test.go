@@ -918,7 +918,7 @@ func BenchmarkRedisCacheSetAsync(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		key := "bench-async-" + string(rune(i%26+'a'))
-		rc.Set(ctx, key, value, opts)
+		_ = rc.Set(ctx, key, value, opts)
 	}
 }
 

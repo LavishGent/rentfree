@@ -240,7 +240,7 @@ func TestBulkheadQueue(t *testing.T) {
 
 		// Start blocking operation
 		go func() {
-			b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+			_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 				started <- struct{}{}
 				<-blocking
 				return nil
@@ -250,7 +250,7 @@ func TestBulkheadQueue(t *testing.T) {
 
 		// Fill the queue
 		go func() {
-			b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+			_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 				started <- struct{}{}
 				<-blocking
 				return nil
@@ -288,7 +288,7 @@ func TestBulkheadTimeout(t *testing.T) {
 
 		for i := 0; i < 2; i++ {
 			go func() {
-				b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+				_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 					started <- struct{}{}
 					<-blocking
 					return nil
@@ -333,7 +333,7 @@ func TestBulkheadContextCancellation(t *testing.T) {
 
 		for i := 0; i < 2; i++ {
 			go func() {
-				b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
+				_ = b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 					started <- struct{}{}
 					<-blocking
 					return nil
