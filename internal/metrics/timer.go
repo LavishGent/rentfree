@@ -3,7 +3,7 @@ package metrics
 import (
 	"time"
 
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
+	"github.com/LavishGent/rentfree/pkg/rentfree"
 )
 
 // Timer is a helper for measuring operation latency.

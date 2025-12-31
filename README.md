@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)](https://goreportcard.com/report/gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree)
+[![Go Report Card](https://goreportcard.com/badge/https://github.com/LavishGent/rentfree)](https://goreportcard.com/report/https://github.com/LavishGent/rentfree)
 
 A production-ready, multi-layer caching library for Go applications with minimal dependencies.
 
@@ -51,7 +51,7 @@ When Redis goes down, the circuit breaker opens and traffic falls back to memory
 ### Installation
 
 ```bash
-go get gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree
+go get github.com/LavishGent/rentfree
 ```
 
 ### Basic Usage
@@ -63,7 +63,7 @@ import (
     "context"
     "fmt"
 
-    "gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
+    "github.com/LavishGent/rentfree/pkg/rentfree"
 )
 
 type User struct {

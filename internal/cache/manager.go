@@ -11,9 +11,9 @@ import (
 
 	"golang.org/x/sync/singleflight"
 
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/resilience"
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
+	"github.com/LavishGent/rentfree/internal/config"
+	"github.com/LavishGent/rentfree/internal/resilience"
+	"github.com/LavishGent/rentfree/internal/types"
 )
 
 const DefaultShutdownTimeout = 30 * time.Second

@@ -3,7 +3,7 @@ package cache
 import (
 	"encoding/json"
 
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
+	"github.com/LavishGent/rentfree/internal/types"
 )
 
 // JSONSerializer implements Serializer using JSON encoding.

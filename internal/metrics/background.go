@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
+	"github.com/LavishGent/rentfree/pkg/rentfree"
 )
 
 // BackgroundPublisher publishes health metrics at regular intervals

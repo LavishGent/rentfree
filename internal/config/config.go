@@ -4,7 +4,7 @@ package config
 import (
 	"time"
 
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/types"
+	"github.com/LavishGent/rentfree/internal/types"
 )
 
 type SecretString = types.SecretString

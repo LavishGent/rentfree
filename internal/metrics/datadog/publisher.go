@@ -6,9 +6,10 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/LavishGent/rentfree/internal/config"
+	"github.com/LavishGent/rentfree/pkg/rentfree"
+
 	"github.com/DataDog/datadog-go/v5/statsd"
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/internal/config"
-	"gitlab.com/appliedsystems/experimental/users/ddavis/stuff/rentfree/pkg/rentfree"
 )
 
 // Publisher implements rentfree.Publisher using the DataDog StatsD client.
