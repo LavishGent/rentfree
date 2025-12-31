@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/LavishGent/rentfree)](https://goreportcard.com/report/github.com/LavishGent/rentfree)
 
-A production-ready, multi-layer caching library for Go applications with minimal dependencies.
+A multi-layer caching library for Go applications with minimal dependencies. **⚠️ Work in Progress** - Not yet recommended for production use.
 
 ## Features
 
