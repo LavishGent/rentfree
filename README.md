@@ -1,8 +1,11 @@
 # rentfree
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
+[![GoDoc](https://pkg.go.dev/badge/github.com/LavishGent/rentfree.svg)](https://pkg.go.dev/github.com/LavishGent/rentfree)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/LavishGent/rentfree)](https://goreportcard.com/report/github.com/LavishGent/rentfree)
+[![CI](https://github.com/LavishGent/rentfree/workflows/CI/badge.svg)](https://github.com/LavishGent/rentfree/actions)
+[![codecov](https://codecov.io/gh/LavishGent/rentfree/branch/main/graph/badge.svg)](https://codecov.io/gh/LavishGent/rentfree)
 
 A multi-layer caching library for Go applications with minimal dependencies. **⚠️ Work in Progress** - Not yet recommended for production use.
 

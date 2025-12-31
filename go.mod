@@ -2,8 +2,6 @@ module github.com/LavishGent/rentfree
 
 go 1.24.0
 
-toolchain go1.24.5
-
 require (
 	github.com/DataDog/datadog-go/v5 v5.8.2
 	github.com/allegro/bigcache/v3 v3.1.0
