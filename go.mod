@@ -1,4 +1,4 @@
-module github.com/lavishgent/rentfree
+module github.com/LavishGent/rentfree
 
 go 1.24.0
 
