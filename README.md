@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/https://github.com/LavishGent/rentfree)](https://goreportcard.com/report/https://github.com/LavishGent/rentfree)
+[![Go Report Card](https://goreportcard.com/badge/github.com/LavishGent/rentfree)](https://goreportcard.com/report/github.com/LavishGent/rentfree)
 
 A production-ready, multi-layer caching library for Go applications with minimal dependencies.
 
