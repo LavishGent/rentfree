@@ -108,7 +108,7 @@ func (p *Publisher) PublishHealthMetrics(m *rentfree.PublisherHealthMetrics) {
 	p.Gauge("memory.usage_percentage", clamp(m.MemoryUsagePercentage, 0, 100))
 	p.Gauge("entries.total", float64(m.TotalEntries))
 	p.Gauge("performance.hit_ratio", clamp(m.HitRatio, 0, 1))
-	p.Gauge("performance.average_latency_ms", max(0, m.AverageLatencyMs))
+	p.Gauge("performance.average_latency_ms", maxFloat(0, m.AverageLatencyMs))
 
 	connected := 0.0
 	if m.IsConnected {
@@ -135,17 +135,17 @@ func (p *Publisher) mergeTags(tags []string) []string {
 	return append(p.baseTags, tags...)
 }
 
-func clamp(val, min, max float64) float64 {
-	if val < min {
-		return min
+func clamp(val, minVal, maxVal float64) float64 {
+	if val < minVal {
+		return minVal
 	}
-	if val > max {
-		return max
+	if val > maxVal {
+		return maxVal
 	}
 	return val
 }
 
-func max(a, b float64) float64 {
+func maxFloat(a, b float64) float64 {
 	if a > b {
 		return a
 	}

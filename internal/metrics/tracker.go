@@ -14,6 +14,7 @@ const (
 	defaultLatencyBufferSize = 10000
 )
 
+// Tracker tracks cache operation metrics in memory.
 type Tracker struct {
 	memoryHits   atomic.Int64
 	memoryMisses atomic.Int64
@@ -36,12 +37,14 @@ type Tracker struct {
 	cbStateChanges atomic.Int64
 }
 
+// NewTracker creates a new metrics tracker.
 func NewTracker() *Tracker {
 	return &Tracker{
 		latencyBuffer: make([]time.Duration, defaultLatencyBufferSize),
 	}
 }
 
+// RecordHit records a cache hit.
 func (t *Tracker) RecordHit(layer string, key string, latency time.Duration) {
 	switch layer {
 	case "memory":
@@ -53,6 +56,7 @@ func (t *Tracker) RecordHit(layer string, key string, latency time.Duration) {
 	t.recordLatency(latency)
 }
 
+// RecordMiss records a cache miss.
 func (t *Tracker) RecordMiss(layer string, key string, latency time.Duration) {
 	switch layer {
 	case "memory":
@@ -64,6 +68,7 @@ func (t *Tracker) RecordMiss(layer string, key string, latency time.Duration) {
 	t.recordLatency(latency)
 }
 
+// RecordSet records a cache set operation.
 func (t *Tracker) RecordSet(layer string, key string, size int, latency time.Duration) {
 	t.setCount.Add(1)
 	t.totalBytesWritten.Add(int64(size))

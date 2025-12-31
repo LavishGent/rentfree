@@ -12,6 +12,7 @@ type Policy struct {
 	bulkhead       BulkheadExecutor
 }
 
+// CircuitBreakerExecutor defines the interface for circuit breaker operations.
 type CircuitBreakerExecutor interface {
 	Execute(fn func() (any, error)) (any, error)
 	Allow() bool
@@ -22,11 +23,13 @@ type CircuitBreakerExecutor interface {
 	SetOnStateChange(fn func(from, to State))
 }
 
+// RetryExecutor defines the interface for retry operations.
 type RetryExecutor interface {
 	ExecuteCtx(ctx context.Context, fn func(context.Context) error) error
 	ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error)
 }
 
+// BulkheadExecutor defines the interface for bulkhead operations.
 type BulkheadExecutor interface {
 	ExecuteCtx(ctx context.Context, fn func(context.Context) error) error
 	ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error)
@@ -35,6 +38,7 @@ type BulkheadExecutor interface {
 	RejectedCount() int64
 }
 
+// NewPolicy creates a new resilience policy from the given configuration.
 func NewPolicy(cfg config.Config) *Policy {
 	p := &Policy{}
 
@@ -128,15 +132,24 @@ func NewDisabledPolicy() *DisabledPolicy {
 	return &DisabledPolicy{}
 }
 
+// Execute runs a function without resilience patterns.
 func (p *DisabledPolicy) Execute(ctx context.Context, fn func(context.Context) error) error {
 	return fn(ctx)
 }
 
+// ExecuteWithResult runs a function that returns a result without resilience patterns.
 func (p *DisabledPolicy) ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error) {
 	return fn(ctx)
 }
 
-func (p *DisabledPolicy) IsCircuitOpen() bool                                 { return false }
-func (p *DisabledPolicy) CircuitState() State                                 { return StateClosed }
-func (p *DisabledPolicy) SetOnCircuitStateChange(fn func(from, to State))     {}
+// IsCircuitOpen returns false as this is a disabled policy.
+func (p *DisabledPolicy) IsCircuitOpen() bool { return false }
+
+// CircuitState returns StateClosed as this is a disabled policy.
+func (p *DisabledPolicy) CircuitState() State { return StateClosed }
+
+// SetOnCircuitStateChange does nothing as this is a disabled policy.
+func (p *DisabledPolicy) SetOnCircuitStateChange(fn func(from, to State)) {}
+
+// BulkheadStats returns zero values as this is a disabled policy.
 func (p *DisabledPolicy) BulkheadStats() (active, queued int, rejected int64) { return 0, 0, 0 }

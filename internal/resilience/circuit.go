@@ -30,6 +30,7 @@ func (s State) String() string {
 	}
 }
 
+// CircuitBreaker implements the circuit breaker pattern for fault tolerance.
 type CircuitBreaker struct {
 	name string
 
@@ -56,6 +57,7 @@ type stateTransition struct {
 	callback func(from, to State)
 }
 
+// NewCircuitBreaker creates a new circuit breaker with the given configuration.
 func NewCircuitBreaker(cfg config.CircuitBreakerConfig) *CircuitBreaker {
 	cb := &CircuitBreaker{
 		name:                "redis",
@@ -83,6 +85,7 @@ func NewCircuitBreaker(cfg config.CircuitBreakerConfig) *CircuitBreaker {
 	return cb
 }
 
+// Execute runs a function through the circuit breaker.
 func (cb *CircuitBreaker) Execute(fn func() (any, error)) (any, error) {
 	if !cb.Allow() {
 		return nil, ErrCircuitOpen
@@ -302,16 +305,34 @@ func NewDisabledCircuitBreaker() *DisabledCircuitBreaker {
 	return &DisabledCircuitBreaker{}
 }
 
+// Execute runs a function without circuit breaker protection.
 func (cb *DisabledCircuitBreaker) Execute(fn func() (any, error)) (any, error) {
 	return fn()
 }
 
-func (cb *DisabledCircuitBreaker) Allow() bool                              { return true }
-func (cb *DisabledCircuitBreaker) RecordSuccess()                           {}
-func (cb *DisabledCircuitBreaker) RecordFailure()                           {}
-func (cb *DisabledCircuitBreaker) State() State                             { return StateClosed }
-func (cb *DisabledCircuitBreaker) IsOpen() bool                             { return false }
-func (cb *DisabledCircuitBreaker) IsClosed() bool                           { return true }
-func (cb *DisabledCircuitBreaker) IsHalfOpen() bool                         { return false }
-func (cb *DisabledCircuitBreaker) Reset()                                   {}
+// Allow returns true as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) Allow() bool { return true }
+
+// RecordSuccess does nothing as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) RecordSuccess() {}
+
+// RecordFailure does nothing as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) RecordFailure() {}
+
+// State returns StateClosed as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) State() State { return StateClosed }
+
+// IsOpen returns false as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) IsOpen() bool { return false }
+
+// IsClosed returns true as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) IsClosed() bool { return true }
+
+// IsHalfOpen returns false as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) IsHalfOpen() bool { return false }
+
+// Reset does nothing as this is a disabled circuit breaker.
+func (cb *DisabledCircuitBreaker) Reset() {}
+
+// SetOnStateChange does nothing as this is a disabled circuit breaker.
 func (cb *DisabledCircuitBreaker) SetOnStateChange(fn func(from, to State)) {}

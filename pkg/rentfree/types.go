@@ -31,6 +31,7 @@ const (
 	PriorityNeverRemove = types.PriorityNeverRemove
 )
 
+// DefaultOptions returns a default CacheOptions configuration.
 func DefaultOptions() *CacheOptions {
 	return types.DefaultOptions()
 }

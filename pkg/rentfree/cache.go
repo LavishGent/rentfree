@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// CacheManager is the main interface for cache operations.
 type CacheManager interface {
 	Get(ctx context.Context, key string, dest any, opts ...Option) error
 	Set(ctx context.Context, key string, value any, opts ...Option) error
@@ -23,6 +24,7 @@ type CacheManager interface {
 	Close() error
 }
 
+// Publisher defines the interface for publishing metrics.
 type Publisher interface {
 	Gauge(name string, value float64, tags ...string)
 	Incr(name string, tags ...string)
@@ -34,6 +36,7 @@ type Publisher interface {
 	Close() error
 }
 
+// PublisherHealthMetrics contains health metrics for publishing.
 type PublisherHealthMetrics struct {
 	MemoryUsedBytes       int64
 	MemoryLimitBytes      int64

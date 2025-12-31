@@ -12,6 +12,7 @@ import (
 	"github.com/LavishGent/rentfree/internal/types"
 )
 
+// MemoryCache implements an in-memory cache layer using BigCache.
 type MemoryCache struct {
 	cache  *bigcache.BigCache
 	config config.MemoryConfig
@@ -26,6 +27,7 @@ type MemoryCache struct {
 	closed atomic.Bool
 }
 
+// NewMemoryCache creates a new memory cache with the given configuration.
 func NewMemoryCache(cfg config.MemoryConfig, logger *slog.Logger) (*MemoryCache, error) {
 	if logger == nil {
 		logger = slog.Default()
@@ -61,14 +63,17 @@ func NewMemoryCache(cfg config.MemoryConfig, logger *slog.Logger) (*MemoryCache,
 	return mc, nil
 }
 
+// Name returns the cache layer name.
 func (c *MemoryCache) Name() string {
 	return "memory"
 }
 
+// IsAvailable returns true if the cache is not closed.
 func (c *MemoryCache) IsAvailable() bool {
 	return !c.closed.Load()
 }
 
+// Get retrieves a value from the memory cache.
 func (c *MemoryCache) Get(ctx context.Context, key string) ([]byte, error) {
 	if c.closed.Load() {
 		return nil, types.ErrClosed
@@ -87,6 +92,7 @@ func (c *MemoryCache) Get(ctx context.Context, key string) ([]byte, error) {
 	return data, nil
 }
 
+// Set stores a value in the memory cache.
 func (c *MemoryCache) Set(ctx context.Context, key string, value []byte, opts *types.CacheOptions) error {
 	if c.closed.Load() {
 		return types.ErrClosed
@@ -100,6 +106,7 @@ func (c *MemoryCache) Set(ctx context.Context, key string, value []byte, opts *t
 	return nil
 }
 
+// Delete removes a value from the memory cache.
 func (c *MemoryCache) Delete(ctx context.Context, key string) error {
 	if c.closed.Load() {
 		return types.ErrClosed
@@ -115,6 +122,7 @@ func (c *MemoryCache) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
+// Contains checks if a key exists in the memory cache.
 func (c *MemoryCache) Contains(ctx context.Context, key string) (bool, error) {
 	if c.closed.Load() {
 		return false, types.ErrClosed
@@ -130,6 +138,7 @@ func (c *MemoryCache) Contains(ctx context.Context, key string) (bool, error) {
 	return true, nil
 }
 
+// Clear removes all entries from the memory cache.
 func (c *MemoryCache) Clear(ctx context.Context) error {
 	if c.closed.Load() {
 		return types.ErrClosed
@@ -138,6 +147,7 @@ func (c *MemoryCache) Clear(ctx context.Context) error {
 	return c.cache.Reset()
 }
 
+// ClearByPattern removes entries matching the given pattern from the memory cache.
 func (c *MemoryCache) ClearByPattern(ctx context.Context, pattern string) error {
 	if c.closed.Load() {
 		return types.ErrClosed
@@ -169,6 +179,7 @@ func (c *MemoryCache) ClearByPattern(ctx context.Context, pattern string) error 
 	return nil
 }
 
+// Close closes the memory cache and releases resources.
 func (c *MemoryCache) Close() error {
 	if c.closed.Swap(true) {
 		return nil
@@ -176,6 +187,7 @@ func (c *MemoryCache) Close() error {
 	return c.cache.Close()
 }
 
+// Stats returns memory cache statistics.
 func (c *MemoryCache) Stats() types.MemoryCacheStats {
 	return types.MemoryCacheStats{
 		Hits:      c.hits.Load(),
@@ -186,18 +198,22 @@ func (c *MemoryCache) Stats() types.MemoryCacheStats {
 	}
 }
 
+// EntryCount returns the number of entries in the memory cache.
 func (c *MemoryCache) EntryCount() int {
 	return c.cache.Len()
 }
 
+// Size returns the current size of the memory cache in bytes.
 func (c *MemoryCache) Size() int64 {
 	return int64(c.cache.Capacity())
 }
 
+// MaxSize returns the maximum size of the memory cache in bytes.
 func (c *MemoryCache) MaxSize() int64 {
 	return int64(c.config.MaxSizeMB) * 1024 * 1024
 }
 
+// UsagePercentage returns the memory cache usage as a percentage.
 func (c *MemoryCache) UsagePercentage() float64 {
 	maxBytes := c.MaxSize()
 	if maxBytes == 0 {
@@ -206,6 +222,7 @@ func (c *MemoryCache) UsagePercentage() float64 {
 	return float64(c.Size()) / float64(maxBytes) * 100
 }
 
+// HitRatio returns the cache hit ratio.
 func (c *MemoryCache) HitRatio() float64 {
 	hits := c.hits.Load()
 	misses := c.misses.Load()

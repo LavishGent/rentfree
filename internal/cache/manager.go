@@ -20,6 +20,7 @@ const DefaultShutdownTimeout = 30 * time.Second
 
 const DefaultBackgroundOpTimeout = 5 * time.Second
 
+// Manager is the main cache manager that coordinates memory and Redis caches.
 type Manager struct {
 	memory       types.MemoryCacheLayer
 	redis        types.RedisCacheLayer
@@ -42,6 +43,7 @@ type Manager struct {
 	closed atomic.Bool
 }
 
+// NewManager creates a new cache manager with the given configuration and options.
 func NewManager(cfg *config.Config, opts *types.ManagerOptions) (*Manager, error) {
 	logger := slog.Default()
 	if opts != nil && opts.Logger != nil {
@@ -126,6 +128,7 @@ func NewManager(cfg *config.Config, opts *types.ManagerOptions) (*Manager, error
 	return m, nil
 }
 
+// Get retrieves a value from the cache.
 func (m *Manager) Get(ctx context.Context, key string, dest any, opts ...types.Option) error {
 	if m.closed.Load() {
 		return types.ErrClosed
@@ -329,6 +332,7 @@ func (m *Manager) GetOrCreate(ctx context.Context, key string, dest any, factory
 	return m.serializer.Unmarshal(result.([]byte), dest)
 }
 
+// Delete removes a value from the cache.
 func (m *Manager) Delete(ctx context.Context, key string, opts ...types.Option) error {
 	if m.closed.Load() {
 		return types.ErrClosed
@@ -391,6 +395,7 @@ func (m *Manager) DeleteMany(ctx context.Context, keys []string, opts ...types.O
 	return nil
 }
 
+// Contains checks if a key exists in the cache.
 func (m *Manager) Contains(ctx context.Context, key string, opts ...types.Option) (bool, error) {
 	if m.closed.Load() {
 		return false, types.ErrClosed
@@ -419,6 +424,7 @@ func (m *Manager) Contains(ctx context.Context, key string, opts ...types.Option
 	return false, nil
 }
 
+// GetMany retrieves multiple values from the cache.
 func (m *Manager) GetMany(ctx context.Context, keys []string, opts ...types.Option) (map[string][]byte, error) {
 	if m.closed.Load() {
 		return nil, types.ErrClosed
@@ -467,6 +473,7 @@ func (m *Manager) GetMany(ctx context.Context, keys []string, opts ...types.Opti
 	return results, nil
 }
 
+// SetMany stores multiple values in the cache.
 func (m *Manager) SetMany(ctx context.Context, items map[string]any, opts ...types.Option) error {
 	if m.closed.Load() {
 		return types.ErrClosed
@@ -522,6 +529,7 @@ func (m *Manager) SetMany(ctx context.Context, items map[string]any, opts ...typ
 	return nil
 }
 
+// Clear removes all entries from the specified cache level.
 func (m *Manager) Clear(ctx context.Context, level types.CacheLevel) error {
 	if m.closed.Load() {
 		return types.ErrClosed
@@ -574,6 +582,7 @@ func (m *Manager) ClearByPattern(ctx context.Context, pattern string, level type
 	return nil
 }
 
+// Health returns comprehensive health metrics for the cache.
 func (m *Manager) Health(ctx context.Context) (*types.HealthMetrics, error) {
 	metrics := &types.HealthMetrics{
 		Timestamp: time.Now(),

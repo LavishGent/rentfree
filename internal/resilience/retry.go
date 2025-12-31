@@ -22,6 +22,7 @@ type RetryPolicy struct {
 	totalFailure atomic.Int64
 }
 
+// NewRetryPolicy creates a new retry policy with the given configuration.
 func NewRetryPolicy(cfg config.RetryConfig) *RetryPolicy {
 	rp := &RetryPolicy{
 		maxAttempts:    cfg.MaxAttempts,
@@ -47,12 +48,14 @@ func NewRetryPolicy(cfg config.RetryConfig) *RetryPolicy {
 	return rp
 }
 
+// Execute runs an operation with retry logic.
 func (rp *RetryPolicy) Execute(fn func() error) error {
 	return rp.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 		return fn()
 	})
 }
 
+// ExecuteCtx runs an operation with retry logic and context.
 func (rp *RetryPolicy) ExecuteCtx(ctx context.Context, fn func(context.Context) error) error {
 	var lastErr error
 
@@ -179,20 +182,25 @@ func NewDisabledRetryPolicy() *DisabledRetryPolicy {
 	return &DisabledRetryPolicy{}
 }
 
+// Execute runs a function without retry logic.
 func (rp *DisabledRetryPolicy) Execute(fn func() error) error {
 	return fn()
 }
 
+// ExecuteCtx runs a function with context without retry logic.
 func (rp *DisabledRetryPolicy) ExecuteCtx(ctx context.Context, fn func(context.Context) error) error {
 	return fn(ctx)
 }
 
+// ExecuteWithResult runs a function that returns a result without retry logic.
 func (rp *DisabledRetryPolicy) ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error) {
 	return fn(ctx)
 }
 
+// Stats returns zero values as this is a disabled retry policy.
 func (rp *DisabledRetryPolicy) Stats() (retries, success, failure int64) {
 	return 0, 0, 0
 }
 
+// Reset does nothing as this is a disabled retry policy.
 func (rp *DisabledRetryPolicy) Reset() {}

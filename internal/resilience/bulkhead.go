@@ -51,6 +51,7 @@ func (b *Bulkhead) Execute(fn func() error) error {
 	})
 }
 
+// ExecuteCtx executes a function with context through the bulkhead.
 func (b *Bulkhead) ExecuteCtx(ctx context.Context, fn func(context.Context) error) error {
 	if err := b.acquire(ctx); err != nil {
 		return err
@@ -66,6 +67,7 @@ func (b *Bulkhead) ExecuteCtx(ctx context.Context, fn func(context.Context) erro
 	return err
 }
 
+// ExecuteWithResult executes a function that returns a result through the bulkhead.
 func (b *Bulkhead) ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error) {
 	if err := b.acquire(ctx); err != nil {
 		return nil, err
@@ -116,18 +118,22 @@ func (b *Bulkhead) release() {
 	<-b.semaphore
 }
 
+// ActiveCount returns the number of currently active operations.
 func (b *Bulkhead) ActiveCount() int {
 	return int(b.activeCount.Load())
 }
 
+// QueuedCount returns the number of operations currently queued.
 func (b *Bulkhead) QueuedCount() int {
 	return int(b.queuedCount.Load())
 }
 
+// RejectedCount returns the total number of rejected operations.
 func (b *Bulkhead) RejectedCount() int64 {
 	return b.rejectedCount.Load()
 }
 
+// TotalExecuted returns the total number of executed operations.
 func (b *Bulkhead) TotalExecuted() int64 {
 	return b.totalExecuted.Load()
 }
@@ -169,21 +175,35 @@ func NewDisabledBulkhead() *DisabledBulkhead {
 	return &DisabledBulkhead{}
 }
 
+// Execute runs a function without bulkhead protection.
 func (b *DisabledBulkhead) Execute(fn func() error) error {
 	return fn()
 }
 
+// ExecuteCtx runs a function with context without bulkhead protection.
 func (b *DisabledBulkhead) ExecuteCtx(ctx context.Context, fn func(context.Context) error) error {
 	return fn(ctx)
 }
 
+// ExecuteWithResult runs a function that returns a result without bulkhead protection.
 func (b *DisabledBulkhead) ExecuteWithResult(ctx context.Context, fn func(context.Context) (any, error)) (any, error) {
 	return fn(ctx)
 }
 
-func (b *DisabledBulkhead) ActiveCount() int     { return 0 }
-func (b *DisabledBulkhead) QueuedCount() int     { return 0 }
+// ActiveCount returns 0 as this is a disabled bulkhead.
+func (b *DisabledBulkhead) ActiveCount() int { return 0 }
+
+// QueuedCount returns 0 as this is a disabled bulkhead.
+func (b *DisabledBulkhead) QueuedCount() int { return 0 }
+
+// RejectedCount returns 0 as this is a disabled bulkhead.
 func (b *DisabledBulkhead) RejectedCount() int64 { return 0 }
+
+// TotalExecuted returns 0 as this is a disabled bulkhead.
 func (b *DisabledBulkhead) TotalExecuted() int64 { return 0 }
-func (b *DisabledBulkhead) AvailableSlots() int  { return 1000000 }
+
+// AvailableSlots returns a large number as this is a disabled bulkhead.
+func (b *DisabledBulkhead) AvailableSlots() int { return 1000000 }
+
+// Stats returns empty statistics as this is a disabled bulkhead.
 func (b *DisabledBulkhead) Stats() BulkheadStats { return BulkheadStats{} }

@@ -19,6 +19,7 @@ const (
 	disconnectErrorThreshold = 5
 )
 
+// RedisCache implements a Redis cache layer with resilience and async writes.
 type RedisCache struct {
 	client *redis.Client
 	config config.RedisConfig
@@ -51,6 +52,7 @@ type writeOp struct {
 	ttl   time.Duration
 }
 
+// NewRedisCache creates a new Redis cache with the given configuration.
 func NewRedisCache(cfg config.RedisConfig, logger *slog.Logger) (*RedisCache, error) {
 	if logger == nil {
 		logger = slog.Default()
@@ -111,10 +113,12 @@ func NewRedisCache(cfg config.RedisConfig, logger *slog.Logger) (*RedisCache, er
 	return rc, nil
 }
 
+// Name returns the cache layer name.
 func (c *RedisCache) Name() string {
 	return "redis"
 }
 
+// IsAvailable returns true if Redis is connected.
 func (c *RedisCache) IsAvailable() bool {
 	return c.connected.Load()
 }
@@ -123,6 +127,7 @@ func (c *RedisCache) prefixKey(key string) string {
 	return c.config.KeyPrefix + key
 }
 
+// Get retrieves a value from Redis.
 func (c *RedisCache) Get(ctx context.Context, key string) ([]byte, error) {
 	if !c.connected.Load() {
 		return nil, types.ErrRedisUnavailable
@@ -146,6 +151,7 @@ func (c *RedisCache) Get(ctx context.Context, key string) ([]byte, error) {
 	return data, nil
 }
 
+// Set stores a value in Redis.
 func (c *RedisCache) Set(ctx context.Context, key string, value []byte, opts *types.CacheOptions) error {
 	if !c.connected.Load() {
 		return types.ErrRedisUnavailable
@@ -265,6 +271,7 @@ func (c *RedisCache) performHealthCheck() {
 	}
 }
 
+// Delete removes a value from Redis.
 func (c *RedisCache) Delete(ctx context.Context, key string) error {
 	if !c.connected.Load() {
 		return types.ErrRedisUnavailable
@@ -283,6 +290,7 @@ func (c *RedisCache) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
+// Contains checks if a key exists in Redis.
 func (c *RedisCache) Contains(ctx context.Context, key string) (bool, error) {
 	if !c.connected.Load() {
 		return false, types.ErrRedisUnavailable
@@ -300,6 +308,7 @@ func (c *RedisCache) Contains(ctx context.Context, key string) (bool, error) {
 	return exists > 0, nil
 }
 
+// Clear removes all entries from Redis with the configured key prefix.
 func (c *RedisCache) Clear(ctx context.Context) error {
 	if !c.connected.Load() {
 		return types.ErrRedisUnavailable
@@ -309,6 +318,7 @@ func (c *RedisCache) Clear(ctx context.Context) error {
 	return c.clearByPatternInternal(ctx, pattern)
 }
 
+// GetMany retrieves multiple values from Redis.
 func (c *RedisCache) GetMany(ctx context.Context, keys []string) (map[string][]byte, error) {
 	if !c.connected.Load() {
 		return nil, types.ErrRedisUnavailable
@@ -345,6 +355,7 @@ func (c *RedisCache) GetMany(ctx context.Context, keys []string) (map[string][]b
 	return resultMap, nil
 }
 
+// SetMany stores multiple values in Redis using a pipeline.
 func (c *RedisCache) SetMany(ctx context.Context, items map[string][]byte, opts *types.CacheOptions) error {
 	if !c.connected.Load() {
 		return types.ErrRedisUnavailable
@@ -382,6 +393,7 @@ func (c *RedisCache) SetMany(ctx context.Context, items map[string][]byte, opts 
 	return nil
 }
 
+// ClearByPattern removes entries matching the given pattern from Redis.
 func (c *RedisCache) ClearByPattern(ctx context.Context, pattern string) error {
 	if !c.connected.Load() {
 		return types.ErrRedisUnavailable
@@ -421,6 +433,7 @@ func (c *RedisCache) clearByPatternInternal(ctx context.Context, pattern string)
 	return nil
 }
 
+// Close closes the Redis connection and stops background workers.
 func (c *RedisCache) Close() error {
 	c.connected.Store(false)
 
@@ -433,10 +446,12 @@ func (c *RedisCache) Close() error {
 	return c.client.Close()
 }
 
+// PendingWrites returns the number of pending async write operations.
 func (c *RedisCache) PendingWrites() int {
 	return int(c.pendingWrites.Load())
 }
 
+// DroppedWrites returns the total number of dropped write operations.
 func (c *RedisCache) DroppedWrites() int64 {
 	return c.droppedWrites.Load()
 }
@@ -475,16 +490,19 @@ func (c *RedisCache) setError(err error) {
 	c.connected.Store(false)
 }
 
+// LastError returns the last error and when it occurred.
 func (c *RedisCache) LastError() (error, time.Time) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.lastError, c.lastErrorTime
 }
 
+// Ping checks if Redis is reachable.
 func (c *RedisCache) Ping(ctx context.Context) error {
 	return c.client.Ping(ctx).Err()
 }
 
+// Reconnect attempts to reconnect to Redis.
 func (c *RedisCache) Reconnect(ctx context.Context) error {
 	if err := c.client.Ping(ctx).Err(); err != nil {
 		return err
