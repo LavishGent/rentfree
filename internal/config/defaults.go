@@ -148,7 +148,7 @@ func ForTesting() *Config {
 	}
 }
 
-// WithRedis returns a test config with Redis enabled.
+// ForTestingWithRedis returns a test config with Redis enabled.
 func ForTestingWithRedis(addr string) *Config {
 	cfg := ForTesting()
 	cfg.Redis.Enabled = true

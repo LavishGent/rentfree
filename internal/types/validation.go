@@ -7,14 +7,16 @@ import (
 	"unicode/utf8"
 )
 
+// KeyValidationConfig contains configuration for cache key validation.
 type KeyValidationConfig struct {
+	ReservedPatterns  []string
 	MaxKeyLength      int
 	AllowEmpty        bool
 	AllowControlChars bool
 	AllowWhitespace   bool
-	ReservedPatterns  []string
 }
 
+// DefaultKeyValidationConfig returns a KeyValidationConfig with default values.
 func DefaultKeyValidationConfig() KeyValidationConfig {
 	return KeyValidationConfig{
 		MaxKeyLength:      1024,
@@ -25,14 +27,17 @@ func DefaultKeyValidationConfig() KeyValidationConfig {
 	}
 }
 
+// KeyValidator validates cache keys according to configured rules.
 type KeyValidator struct {
 	config KeyValidationConfig
 }
 
+// NewKeyValidator creates a new KeyValidator with the given configuration.
 func NewKeyValidator(config KeyValidationConfig) *KeyValidator {
 	return &KeyValidator{config: config}
 }
 
+// Validate checks if a cache key is valid according to the configured rules.
 func (v *KeyValidator) Validate(key string) error {
 	// Check empty
 	if key == "" {
@@ -80,12 +85,15 @@ func (v *KeyValidator) Validate(key string) error {
 	return nil
 }
 
+// ValidateKey validates a key using the default validator.
 func ValidateKey(key string) error {
 	return DefaultKeyValidator.Validate(key)
 }
 
+// DefaultKeyValidator is the default key validator instance.
 var DefaultKeyValidator = NewKeyValidator(DefaultKeyValidationConfig())
 
+// IsInvalidKey returns true if the error indicates an invalid key.
 func IsInvalidKey(err error) bool {
 	return err != nil && strings.Contains(err.Error(), ErrInvalidKey.Error())
 }

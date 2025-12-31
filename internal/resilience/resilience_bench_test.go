@@ -146,7 +146,7 @@ func BenchmarkBulkhead_ExecuteParallel(b *testing.B) {
 }
 
 func BenchmarkPolicy_Execute_AllEnabled(b *testing.B) {
-	cfg := config.Config{
+	cfg := &config.Config{
 		CircuitBreaker: config.CircuitBreakerConfig{
 			Enabled:          true,
 			FailureThreshold: 5,
@@ -183,7 +183,7 @@ func BenchmarkPolicy_Execute_AllEnabled(b *testing.B) {
 }
 
 func BenchmarkPolicy_Execute_AllDisabled(b *testing.B) {
-	cfg := config.Config{
+	cfg := &config.Config{
 		CircuitBreaker: config.CircuitBreakerConfig{
 			Enabled: false,
 		},
@@ -210,7 +210,7 @@ func BenchmarkPolicy_Execute_AllDisabled(b *testing.B) {
 }
 
 func BenchmarkPolicy_ExecuteParallel(b *testing.B) {
-	cfg := config.Config{
+	cfg := &config.Config{
 		CircuitBreaker: config.CircuitBreakerConfig{
 			Enabled:          true,
 			FailureThreshold: 5,

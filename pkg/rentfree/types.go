@@ -7,27 +7,43 @@ import (
 )
 
 type (
-	CacheLevel       = types.CacheLevel
-	CachePriority    = types.CachePriority
-	CacheEntry       = types.CacheEntry
-	CacheOptions     = types.CacheOptions
+	// CacheLevel specifies which cache layers to use for an operation.
+	CacheLevel = types.CacheLevel
+	// CachePriority specifies the eviction priority of a cache entry.
+	CachePriority = types.CachePriority
+	// CacheEntry represents a cached value with metadata.
+	CacheEntry = types.CacheEntry
+	// CacheOptions contains options for cache operations.
+	CacheOptions = types.CacheOptions
+	// MemoryCacheStats contains statistics about the memory cache.
 	MemoryCacheStats = types.MemoryCacheStats
-	Serializer       = types.Serializer
-	MetricsRecorder  = types.MetricsRecorder
-	Logger           = types.Logger
+	// Serializer provides serialization and deserialization operations.
+	Serializer = types.Serializer
+	// MetricsRecorder provides operations for recording cache metrics.
+	MetricsRecorder = types.MetricsRecorder
+	// Logger provides logging operations.
+	Logger = types.Logger
 )
 
 const (
-	LevelMemoryOnly      = types.LevelMemoryOnly
-	LevelRedisOnly       = types.LevelRedisOnly
+	// LevelMemoryOnly uses only the in-memory cache layer.
+	LevelMemoryOnly = types.LevelMemoryOnly
+	// LevelRedisOnly uses only the Redis cache layer.
+	LevelRedisOnly = types.LevelRedisOnly
+	// LevelMemoryThenRedis checks memory first, then falls back to Redis.
 	LevelMemoryThenRedis = types.LevelMemoryThenRedis
-	LevelAll             = types.LevelAll
+	// LevelAll uses all available cache layers.
+	LevelAll = types.LevelAll
 )
 
 const (
-	PriorityLow         = types.PriorityLow
-	PriorityNormal      = types.PriorityNormal
-	PriorityHigh        = types.PriorityHigh
+	// PriorityLow indicates low priority entries that are evicted first.
+	PriorityLow = types.PriorityLow
+	// PriorityNormal indicates normal priority entries.
+	PriorityNormal = types.PriorityNormal
+	// PriorityHigh indicates high priority entries that are evicted last.
+	PriorityHigh = types.PriorityHigh
+	// PriorityNeverRemove indicates entries that should never be evicted.
 	PriorityNeverRemove = types.PriorityNeverRemove
 )
 

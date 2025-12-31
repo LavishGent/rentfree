@@ -11,6 +11,7 @@ import (
 )
 
 func TestCircuitBreakerStateString(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		state    State
 		expected string

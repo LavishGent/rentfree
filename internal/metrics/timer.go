@@ -7,11 +7,13 @@ import (
 )
 
 // Timer is a helper for measuring operation latency.
+//
+//nolint:govet // Small struct - minimal alignment benefit
 type Timer struct {
 	publisher rentfree.Publisher
-	name      string
 	tags      []string
 	start     time.Time
+	name      string
 }
 
 // NewTimer creates a new timer that will record to the publisher when stopped.

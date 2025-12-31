@@ -10,6 +10,7 @@ import (
 	"github.com/LavishGent/rentfree/internal/config"
 )
 
+// RetryPolicy implements the retry pattern with exponential backoff.
 type RetryPolicy struct {
 	maxAttempts    int
 	initialBackoff time.Duration

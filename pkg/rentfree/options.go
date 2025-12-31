@@ -7,7 +7,9 @@ import (
 )
 
 type (
-	Option         = types.Option
+	// Option is a function that modifies CacheOptions.
+	Option = types.Option
+	// ManagerOptions contains options for creating a cache manager.
 	ManagerOptions = types.ManagerOptions
 )
 

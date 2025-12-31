@@ -115,6 +115,7 @@ func TestManagerGet(t *testing.T) {
 		m := newTestManager(t)
 		defer m.Close()
 
+		//nolint:govet // Test struct - alignment not critical
 		type User struct {
 			ID    int    `json:"id"`
 			Name  string `json:"name"`
@@ -450,6 +451,7 @@ func TestManagerGetOrCreate(t *testing.T) {
 		m := newTestManager(t)
 		defer m.Close()
 
+		//nolint:govet // Test struct - alignment not critical
 		type Product struct {
 			ID    int     `json:"id"`
 			Name  string  `json:"name"`

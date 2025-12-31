@@ -20,30 +20,28 @@ const (
 )
 
 // RedisCache implements a Redis cache layer with resilience and async writes.
+//
+//nolint:govet // Complex struct with atomics - field ordering balances readability and alignment
 type RedisCache struct {
-	client *redis.Client
-	config config.RedisConfig
-	logger *slog.Logger
-
-	mu            sync.RWMutex
-	connected     atomic.Bool
-	lastError     error
-	lastErrorTime time.Time
-	errorCount    atomic.Int64
-
-	writeQueue    chan writeOp
-	pendingWrites atomic.Int32
-	droppedWrites atomic.Int64
-	stopCh        chan struct{}
-	wg            sync.WaitGroup
-
+	writeQueue        chan writeOp
+	stopCh            chan struct{}
 	healthCheckStopCh chan struct{}
+	client            *redis.Client
+	logger            *slog.Logger
+	lastError         error
+	errorCount        atomic.Int64
+	hits              atomic.Int64
+	misses            atomic.Int64
+	sets              atomic.Int64
+	deletes           atomic.Int64
+	droppedWrites     atomic.Int64
+	pendingWrites     atomic.Int32
+	connected         atomic.Bool
+	mu                sync.RWMutex
+	wg                sync.WaitGroup
 	healthCheckWg     sync.WaitGroup
-
-	hits    atomic.Int64
-	misses  atomic.Int64
-	sets    atomic.Int64
-	deletes atomic.Int64
+	lastErrorTime     time.Time
+	config            config.RedisConfig
 }
 
 type writeOp struct {
@@ -53,7 +51,7 @@ type writeOp struct {
 }
 
 // NewRedisCache creates a new Redis cache with the given configuration.
-func NewRedisCache(cfg config.RedisConfig, logger *slog.Logger) (*RedisCache, error) {
+func NewRedisCache(cfg *config.RedisConfig, logger *slog.Logger) (*RedisCache, error) {
 	if logger == nil {
 		logger = slog.Default()
 	}
@@ -83,7 +81,7 @@ func NewRedisCache(cfg config.RedisConfig, logger *slog.Logger) (*RedisCache, er
 
 	rc := &RedisCache{
 		client:            client,
-		config:            cfg,
+		config:            *cfg,
 		logger:            logger.With("component", "redis-cache"),
 		writeQueue:        make(chan writeOp, cfg.MaxPendingWrites),
 		stopCh:            make(chan struct{}),

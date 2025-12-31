@@ -8,18 +8,19 @@ import (
 	"github.com/LavishGent/rentfree/internal/config"
 )
 
+// Bulkhead implements the bulkhead pattern for limiting concurrent operations.
 type Bulkhead struct {
+	semaphore      chan struct{}
+	rejectedCount  atomic.Int64
+	totalExecuted  atomic.Int64
+	activeCount    atomic.Int32
+	queuedCount    atomic.Int32
+	acquireTimeout time.Duration
 	maxConcurrent  int
 	maxQueue       int
-	acquireTimeout time.Duration
-	semaphore      chan struct{}
-
-	activeCount   atomic.Int32
-	queuedCount   atomic.Int32
-	rejectedCount atomic.Int64
-	totalExecuted atomic.Int64
 }
 
+// NewBulkhead creates a new Bulkhead with the given configuration.
 func NewBulkhead(cfg config.BulkheadConfig) *Bulkhead {
 	maxConcurrent := cfg.MaxConcurrent
 	maxQueue := cfg.MaxQueue
@@ -45,6 +46,7 @@ func NewBulkhead(cfg config.BulkheadConfig) *Bulkhead {
 	}
 }
 
+// Execute executes a function through the bulkhead.
 func (b *Bulkhead) Execute(fn func() error) error {
 	return b.ExecuteCtx(context.Background(), func(ctx context.Context) error {
 		return fn()

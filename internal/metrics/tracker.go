@@ -15,18 +15,17 @@ const (
 )
 
 // Tracker tracks cache operation metrics in memory.
+//
+//nolint:govet // Many atomic counters - grouping by purpose more readable than by size
 type Tracker struct {
-	memoryHits   atomic.Int64
-	memoryMisses atomic.Int64
-	redisHits    atomic.Int64
-	redisMisses  atomic.Int64
-
-	getCount    atomic.Int64
-	setCount    atomic.Int64
-	deleteCount atomic.Int64
-
-	errorCount atomic.Int64
-
+	memoryHits    atomic.Int64
+	memoryMisses  atomic.Int64
+	redisHits     atomic.Int64
+	redisMisses   atomic.Int64
+	getCount      atomic.Int64
+	setCount      atomic.Int64
+	deleteCount   atomic.Int64
+	errorCount    atomic.Int64
 	latencyMu     sync.RWMutex
 	latencyBuffer []time.Duration
 	latencyIndex  int

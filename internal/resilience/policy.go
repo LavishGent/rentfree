@@ -6,6 +6,7 @@ import (
 	"github.com/LavishGent/rentfree/internal/config"
 )
 
+// Policy combines multiple resilience patterns (circuit breaker, retry, bulkhead).
 type Policy struct {
 	circuitBreaker CircuitBreakerExecutor
 	retry          RetryExecutor
@@ -39,7 +40,7 @@ type BulkheadExecutor interface {
 }
 
 // NewPolicy creates a new resilience policy from the given configuration.
-func NewPolicy(cfg config.Config) *Policy {
+func NewPolicy(cfg *config.Config) *Policy {
 	p := &Policy{}
 
 	// Create circuit breaker

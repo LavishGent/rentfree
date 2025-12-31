@@ -11,8 +11,8 @@ import (
 	"github.com/LavishGent/rentfree/internal/config"
 )
 
-func testConfig() config.Config {
-	return config.Config{
+func testConfig() *config.Config {
+	return &config.Config{
 		CircuitBreaker: config.CircuitBreakerConfig{
 			Enabled:             true,
 			FailureThreshold:    3,
@@ -54,7 +54,7 @@ func TestNewPolicy(t *testing.T) {
 	})
 
 	t.Run("creates disabled components when not enabled", func(t *testing.T) {
-		cfg := config.Config{
+		cfg := &config.Config{
 			CircuitBreaker: config.CircuitBreakerConfig{Enabled: false},
 			Retry:          config.RetryConfig{Enabled: false},
 			Bulkhead:       config.BulkheadConfig{Enabled: false},

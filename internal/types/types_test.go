@@ -7,6 +7,7 @@ import (
 )
 
 func TestCacheLevelString(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		level    CacheLevel
 		expected string
@@ -68,6 +69,7 @@ func TestCacheLevelIncludesRedis(t *testing.T) {
 }
 
 func TestCachePriorityString(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		priority CachePriority
 		expected string
@@ -240,6 +242,7 @@ func TestNewCacheError(t *testing.T) {
 }
 
 func TestIsCacheMiss(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		name   string
 		err    error
@@ -261,6 +264,7 @@ func TestIsCacheMiss(t *testing.T) {
 }
 
 func TestIsRedisUnavailable(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		name   string
 		err    error
@@ -282,6 +286,7 @@ func TestIsRedisUnavailable(t *testing.T) {
 }
 
 func TestIsCircuitOpen(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		name   string
 		err    error
@@ -303,6 +308,7 @@ func TestIsCircuitOpen(t *testing.T) {
 }
 
 func TestIsRetryable(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		name   string
 		err    error

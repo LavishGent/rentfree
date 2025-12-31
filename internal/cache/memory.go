@@ -14,17 +14,15 @@ import (
 
 // MemoryCache implements an in-memory cache layer using BigCache.
 type MemoryCache struct {
-	cache  *bigcache.BigCache
-	config config.MemoryConfig
-	logger *slog.Logger
-
+	cache     *bigcache.BigCache
+	logger    *slog.Logger
 	hits      atomic.Int64
 	misses    atomic.Int64
 	sets      atomic.Int64
 	deletes   atomic.Int64
 	evictions atomic.Int64
-
-	closed atomic.Bool
+	config    config.MemoryConfig
+	closed    atomic.Bool
 }
 
 // NewMemoryCache creates a new memory cache with the given configuration.
@@ -168,7 +166,9 @@ func (c *MemoryCache) ClearByPattern(ctx context.Context, pattern string) error 
 	}
 
 	for _, key := range keysToDelete {
-		_ = c.cache.Delete(key)
+		if err := c.cache.Delete(key); err != nil {
+			c.logger.Debug("Failed to delete key", "key", key, "error", err)
+		}
 	}
 
 	c.logger.Debug("Cleared entries by pattern",
@@ -262,6 +262,7 @@ type bigcacheLogger struct {
 	logger *slog.Logger
 }
 
+// Printf implements the Printf method for bigcache logging.
 func (l *bigcacheLogger) Printf(format string, args ...any) {
 	l.logger.Debug("bigcache: "+format, args...)
 }

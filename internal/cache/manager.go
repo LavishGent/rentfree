@@ -16,34 +16,33 @@ import (
 	"github.com/LavishGent/rentfree/internal/types"
 )
 
+// DefaultShutdownTimeout is the default timeout for shutting down the cache manager.
 const DefaultShutdownTimeout = 30 * time.Second
 
+// DefaultBackgroundOpTimeout is the default timeout for background operations.
 const DefaultBackgroundOpTimeout = 5 * time.Second
 
 // Manager is the main cache manager that coordinates memory and Redis caches.
 type Manager struct {
-	memory       types.MemoryCacheLayer
-	redis        types.RedisCacheLayer
-	policy       *resilience.Policy
-	serializer   types.Serializer
-	config       *config.Config
-	metrics      types.MetricsRecorder
-	logger       *slog.Logger
-	keyValidator *types.KeyValidator
-
-	sfGroup singleflight.Group
-
-	bgWg sync.WaitGroup
-
-	bgMu sync.Mutex
-
-	shutdownCtx    context.Context
+	memory         types.MemoryCacheLayer
+	redis          types.RedisCacheLayer
+	policy         *resilience.Policy
+	serializer     types.Serializer
+	config         *config.Config
+	metrics        types.MetricsRecorder
+	logger         *slog.Logger
+	keyValidator   *types.KeyValidator
 	shutdownCancel context.CancelFunc
-
-	closed atomic.Bool
+	shutdownCtx    context.Context
+	sfGroup        singleflight.Group
+	bgWg           sync.WaitGroup
+	bgMu           sync.Mutex
+	closed         atomic.Bool
 }
 
 // NewManager creates a new cache manager with the given configuration and options.
+//
+//nolint:gocyclo // Configuration initialization requires multiple conditional checks
 func NewManager(cfg *config.Config, opts *types.ManagerOptions) (*Manager, error) {
 	logger := slog.Default()
 	if opts != nil && opts.Logger != nil {
@@ -102,7 +101,7 @@ func NewManager(cfg *config.Config, opts *types.ManagerOptions) (*Manager, error
 	}
 
 	if cfg.Redis.Enabled {
-		redisCache, err := NewRedisCache(cfg.Redis, logger)
+		redisCache, err := NewRedisCache(&cfg.Redis, logger)
 		if err != nil {
 			logger.Warn("Failed to create Redis cache, using memory-only mode", "error", err)
 			m.redis = NewDisabledRedisCache()
@@ -113,7 +112,7 @@ func NewManager(cfg *config.Config, opts *types.ManagerOptions) (*Manager, error
 		m.redis = NewDisabledRedisCache()
 	}
 
-	m.policy = resilience.NewPolicy(*cfg)
+	m.policy = resilience.NewPolicy(cfg)
 
 	m.policy.SetOnCircuitStateChange(func(from, to resilience.State) {
 		logger.Info("Circuit breaker state changed",
@@ -221,7 +220,12 @@ func (m *Manager) getFromRedis(ctx context.Context, key string) ([]byte, error) 
 		return nil, err
 	}
 
-	return result.([]byte), nil
+	data, ok := result.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("unexpected result type: %T", result)
+	}
+
+	return data, nil
 }
 
 // Set stores a value in the cache.
@@ -329,7 +333,12 @@ func (m *Manager) GetOrCreate(ctx context.Context, key string, dest any, factory
 		return err
 	}
 
-	return m.serializer.Unmarshal(result.([]byte), dest)
+	data, ok := result.([]byte)
+	if !ok {
+		return fmt.Errorf("unexpected result type: %T", result)
+	}
+
+	return m.serializer.Unmarshal(data, dest)
 }
 
 // Delete removes a value from the cache.
@@ -415,7 +424,10 @@ func (m *Manager) Contains(ctx context.Context, key string, opts ...types.Option
 		return m.redis.Contains(ctx, key)
 
 	case types.LevelMemoryThenRedis, types.LevelAll:
-		if exists, _ := m.memory.Contains(ctx, key); exists {
+		exists, err := m.memory.Contains(ctx, key)
+		if err != nil {
+			m.logger.Debug("Memory contains check failed", "key", key, "error", err)
+		} else if exists {
 			return true, nil
 		}
 		return m.redis.Contains(ctx, key)
@@ -615,11 +627,12 @@ func (m *Manager) Health(ctx context.Context) (*types.HealthMetrics, error) {
 		metrics.Redis.Status = types.HealthStatusUnhealthy
 	}
 
-	if metrics.Memory.Status == types.HealthStatusHealthy && metrics.Redis.Status == types.HealthStatusHealthy {
+	switch {
+	case metrics.Memory.Status == types.HealthStatusHealthy && metrics.Redis.Status == types.HealthStatusHealthy:
 		metrics.Status = types.HealthStatusHealthy
-	} else if metrics.Memory.Status == types.HealthStatusHealthy {
+	case metrics.Memory.Status == types.HealthStatusHealthy:
 		metrics.Status = types.HealthStatusDegraded
-	} else {
+	default:
 		metrics.Status = types.HealthStatusUnhealthy
 	}
 
@@ -791,16 +804,21 @@ func parsePriority(s string) types.CachePriority {
 	}
 }
 
+//nolint:govet // Simple adapter struct - alignment optimization minimal
 type slogAdapter struct {
-	logger types.Logger
 	attrs  []slog.Attr
+	logger types.Logger
 	group  string // current group prefix from WithGroup calls
 }
 
+// Enabled implements slog.Handler.
 func (a slogAdapter) Enabled(ctx context.Context, level slog.Level) bool {
 	return true
 }
 
+// Handle implements slog.Handler.
+//
+//nolint:gocritic // slog.Handler interface requires passing Record by value
 func (a slogAdapter) Handle(ctx context.Context, r slog.Record) error {
 	args := make([]any, 0, (len(a.attrs)+r.NumAttrs())*2)
 
@@ -834,6 +852,7 @@ func (a slogAdapter) Handle(ctx context.Context, r slog.Record) error {
 	return nil
 }
 
+// WithAttrs implements slog.Handler.
 func (a slogAdapter) WithAttrs(attrs []slog.Attr) slog.Handler {
 	newAttrs := make([]slog.Attr, len(a.attrs), len(a.attrs)+len(attrs))
 	copy(newAttrs, a.attrs)
@@ -845,6 +864,7 @@ func (a slogAdapter) WithAttrs(attrs []slog.Attr) slog.Handler {
 	}
 }
 
+// WithGroup implements slog.Handler.
 func (a slogAdapter) WithGroup(name string) slog.Handler {
 	newGroup := name
 	if a.group != "" {

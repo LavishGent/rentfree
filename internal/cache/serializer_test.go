@@ -15,6 +15,7 @@ func TestJSONSerializerMarshal(t *testing.T) {
 	s := NewJSONSerializer()
 
 	t.Run("marshals struct", func(t *testing.T) {
+		//nolint:govet // Test struct - alignment not critical
 		type User struct {
 			ID   int    `json:"id"`
 			Name string `json:"name"`
@@ -112,6 +113,7 @@ func TestJSONSerializerUnmarshal(t *testing.T) {
 	s := NewJSONSerializer()
 
 	t.Run("unmarshals to struct", func(t *testing.T) {
+		//nolint:govet // Test struct - alignment not critical
 		type User struct {
 			ID   int    `json:"id"`
 			Name string `json:"name"`
@@ -215,6 +217,7 @@ func TestJSONSerializerUnmarshal(t *testing.T) {
 func TestJSONSerializerRoundTrip(t *testing.T) {
 	s := NewJSONSerializer()
 
+	//nolint:govet // Test struct - alignment not critical
 	type ComplexType struct {
 		ID       int               `json:"id"`
 		Name     string            `json:"name"`

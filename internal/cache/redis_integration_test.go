@@ -67,7 +67,7 @@ func skipIfRedisUnavailable(t *testing.T) *RedisCache {
 		MaxPendingWrites: 100,
 	}
 
-	rc, err := NewRedisCache(cfg, nil)
+	rc, err := NewRedisCache(&cfg, nil)
 	if err != nil {
 		t.Skipf("Redis unavailable: %v", err)
 	}
@@ -841,7 +841,7 @@ func BenchmarkRedisCacheGet(b *testing.B) {
 		MaxPendingWrites: 1000,
 	}
 
-	rc, err := NewRedisCache(cfg, nil)
+	rc, err := NewRedisCache(&cfg, nil)
 	if err != nil || !rc.IsAvailable() {
 		b.Skip("Redis unavailable")
 	}
@@ -874,7 +874,7 @@ func BenchmarkRedisCacheSet(b *testing.B) {
 		MaxPendingWrites: 1000,
 	}
 
-	rc, err := NewRedisCache(cfg, nil)
+	rc, err := NewRedisCache(&cfg, nil)
 	if err != nil || !rc.IsAvailable() {
 		b.Skip("Redis unavailable")
 	}
@@ -905,7 +905,7 @@ func BenchmarkRedisCacheSetAsync(b *testing.B) {
 		MaxPendingWrites: 10000,
 	}
 
-	rc, err := NewRedisCache(cfg, nil)
+	rc, err := NewRedisCache(&cfg, nil)
 	if err != nil || !rc.IsAvailable() {
 		b.Skip("Redis unavailable")
 	}
@@ -983,7 +983,7 @@ func TestRedisHealthCheck(t *testing.T) {
 			HealthCheckInterval: 100 * time.Millisecond, // Fast interval for testing
 		}
 
-		rc, err := NewRedisCache(cfg, nil)
+		rc, err := NewRedisCache(&cfg, nil)
 		require.NoError(t, err)
 
 		// Let health check run a few times
@@ -1025,7 +1025,7 @@ func TestRedisHealthCheck(t *testing.T) {
 			HealthCheckInterval: 0, // Disabled
 		}
 
-		rc, err := NewRedisCache(cfg, nil)
+		rc, err := NewRedisCache(&cfg, nil)
 		require.NoError(t, err)
 
 		// Close should work without issues even though health check was disabled

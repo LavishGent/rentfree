@@ -13,11 +13,13 @@ import (
 )
 
 // Publisher implements rentfree.Publisher using the DataDog StatsD client.
+//
+//nolint:govet // Small struct - minimal alignment benefit
 type Publisher struct {
-	client   *statsd.Client
-	config   *config.DataDogConfig
 	baseTags []string
+	client   *statsd.Client
 	logger   *slog.Logger
+	config   *config.DataDogConfig
 }
 
 // NewPublisher creates a new DataDog publisher from config.
@@ -58,31 +60,41 @@ func NewPublisher(cfg *config.DataDogConfig, logger *slog.Logger) (rentfree.Publ
 // Gauge records a gauge metric (value at a point in time).
 func (p *Publisher) Gauge(name string, value float64, tags ...string) {
 	allTags := p.mergeTags(tags)
-	_ = p.client.Gauge(name, value, allTags, 1)
+	if err := p.client.Gauge(name, value, allTags, 1); err != nil {
+		p.logger.Debug("Failed to send gauge metric", "name", name, "error", err)
+	}
 }
 
 // Incr increments a counter by 1.
 func (p *Publisher) Incr(name string, tags ...string) {
 	allTags := p.mergeTags(tags)
-	_ = p.client.Incr(name, allTags, 1)
+	if err := p.client.Incr(name, allTags, 1); err != nil {
+		p.logger.Debug("Failed to send incr metric", "name", name, "error", err)
+	}
 }
 
 // Count increments a counter by a specified amount.
 func (p *Publisher) Count(name string, value int64, tags ...string) {
 	allTags := p.mergeTags(tags)
-	_ = p.client.Count(name, value, allTags, 1)
+	if err := p.client.Count(name, value, allTags, 1); err != nil {
+		p.logger.Debug("Failed to send count metric", "name", name, "error", err)
+	}
 }
 
 // Histogram records a distribution of values.
 func (p *Publisher) Histogram(name string, value float64, tags ...string) {
 	allTags := p.mergeTags(tags)
-	_ = p.client.Histogram(name, value, allTags, 1)
+	if err := p.client.Histogram(name, value, allTags, 1); err != nil {
+		p.logger.Debug("Failed to send histogram metric", "name", name, "error", err)
+	}
 }
 
 // Timing records a timing metric.
 func (p *Publisher) Timing(name string, duration time.Duration, tags ...string) {
 	allTags := p.mergeTags(tags)
-	_ = p.client.Timing(name, duration, allTags, 1)
+	if err := p.client.Timing(name, duration, allTags, 1); err != nil {
+		p.logger.Debug("Failed to send timing metric", "name", name, "error", err)
+	}
 }
 
 // Event sends a DataDog event.
@@ -94,7 +106,9 @@ func (p *Publisher) Event(title, text, alertType string, tags ...string) {
 		AlertType: statsd.EventAlertType(alertType),
 		Tags:      allTags,
 	}
-	_ = p.client.Event(event)
+	if err := p.client.Event(event); err != nil {
+		p.logger.Debug("Failed to send event", "title", title, "error", err)
+	}
 }
 
 // PublishHealthMetrics publishes a batch of health metrics.

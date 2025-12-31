@@ -7,32 +7,39 @@ import (
 	"github.com/LavishGent/rentfree/internal/types"
 )
 
+// SecretString is a string type that redacts its value when marshaled to JSON.
 type SecretString = types.SecretString
 
+// NewSecretString creates a new SecretString with the provided value.
 func NewSecretString(value string) SecretString {
 	return types.NewSecretString(value)
 }
 
+// Config contains all configuration for the rentfree cache manager.
+//
+//nolint:govet // Configuration struct - logical grouping prioritized over alignment
 type Config struct {
-	Memory         MemoryConfig         `json:"memory"`
 	Redis          RedisConfig          `json:"redis"`
-	Defaults       DefaultsConfig       `json:"defaults"`
+	Metrics        MetricsConfig        `json:"metrics"`
 	CircuitBreaker CircuitBreakerConfig `json:"circuitBreaker"`
+	Defaults       DefaultsConfig       `json:"defaults"`
+	Memory         MemoryConfig         `json:"memory"`
 	Retry          RetryConfig          `json:"retry"`
 	Bulkhead       BulkheadConfig       `json:"bulkhead"`
-	Metrics        MetricsConfig        `json:"metrics"`
 	KeyValidation  KeyValidationConfig  `json:"keyValidation"`
 }
 
+// KeyValidationConfig contains configuration for cache key validation.
 type KeyValidationConfig struct {
-	Enabled           bool     `json:"enabled"`
+	ReservedPatterns  []string `json:"reservedPatterns"`
 	MaxKeyLength      int      `json:"maxKeyLength"`
+	Enabled           bool     `json:"enabled"`
 	AllowEmpty        bool     `json:"allowEmpty"`
 	AllowControlChars bool     `json:"allowControlChars"`
 	AllowWhitespace   bool     `json:"allowWhitespace"`
-	ReservedPatterns  []string `json:"reservedPatterns"`
 }
 
+// ToTypesConfig converts this config to a types.KeyValidationConfig.
 func (c KeyValidationConfig) ToTypesConfig() types.KeyValidationConfig {
 	return types.KeyValidationConfig{
 		MaxKeyLength:      c.MaxKeyLength,
@@ -43,35 +50,42 @@ func (c KeyValidationConfig) ToTypesConfig() types.KeyValidationConfig {
 	}
 }
 
+// MemoryConfig contains configuration for the memory cache layer.
 type MemoryConfig struct {
-	Enabled          bool          `json:"enabled"`
-	MaxSizeMB        int           `json:"maxSizeMB"`
 	DefaultTTL       time.Duration `json:"defaultTTL"`
 	CleanupInterval  time.Duration `json:"cleanupInterval"`
+	MaxSizeMB        int           `json:"maxSizeMB"`
 	Shards           int           `json:"shards"`
 	MaxEntrySize     int           `json:"maxEntrySize"`
+	Enabled          bool          `json:"enabled"`
 	HardMaxCacheSize bool          `json:"hardMaxCacheSize"`
 }
 
+// RedisConfig contains configuration for the Redis cache layer.
+//
+//nolint:govet // Configuration struct - logical grouping prioritized over alignment
 type RedisConfig struct {
-	Enabled             bool          `json:"enabled"`
-	Address             string        `json:"address"`
-	Password            SecretString  `json:"password"`
-	DB                  int           `json:"db"`
-	KeyPrefix           string        `json:"keyPrefix"`
 	DefaultTTL          time.Duration `json:"defaultTTL"`
-	PoolSize            int           `json:"poolSize"`
-	MinIdleConns        int           `json:"minIdleConns"`
 	DialTimeout         time.Duration `json:"dialTimeout"`
 	ReadTimeout         time.Duration `json:"readTimeout"`
 	WriteTimeout        time.Duration `json:"writeTimeout"`
 	PoolTimeout         time.Duration `json:"poolTimeout"`
+	HealthCheckInterval time.Duration `json:"healthCheckInterval"`
+	Password            SecretString  `json:"password"`
+	Address             string        `json:"address"`
+	KeyPrefix           string        `json:"keyPrefix"`
+	DB                  int           `json:"db"`
+	PoolSize            int           `json:"poolSize"`
+	MinIdleConns        int           `json:"minIdleConns"`
 	MaxPendingWrites    int           `json:"maxPendingWrites"`
+	Enabled             bool          `json:"enabled"`
 	EnableTLS           bool          `json:"enableTLS"`
 	TLSSkipVerify       bool          `json:"tlsSkipVerify"`
-	HealthCheckInterval time.Duration `json:"healthCheckInterval"`
 }
 
+// DefaultsConfig contains default values for cache operations.
+//
+//nolint:govet // Small config struct - minimal alignment benefit
 type DefaultsConfig struct {
 	TTL      time.Duration `json:"ttl"`
 	Level    string        `json:"level"`
@@ -81,6 +95,7 @@ type DefaultsConfig struct {
 	FireAndForget bool `json:"fireAndForget"`
 }
 
+// CircuitBreakerConfig contains configuration for the circuit breaker pattern.
 type CircuitBreakerConfig struct {
 	Enabled             bool          `json:"enabled"`
 	FailureThreshold    int           `json:"failureThreshold"`
@@ -89,15 +104,17 @@ type CircuitBreakerConfig struct {
 	HalfOpenMaxRequests int           `json:"halfOpenMaxRequests"`
 }
 
+// RetryConfig contains configuration for the retry pattern.
 type RetryConfig struct {
-	Enabled        bool          `json:"enabled"`
-	MaxAttempts    int           `json:"maxAttempts"`
 	InitialBackoff time.Duration `json:"initialBackoff"`
 	MaxBackoff     time.Duration `json:"maxBackoff"`
 	Multiplier     float64       `json:"multiplier"`
+	MaxAttempts    int           `json:"maxAttempts"`
+	Enabled        bool          `json:"enabled"`
 	Jitter         bool          `json:"jitter"`
 }
 
+// BulkheadConfig contains configuration for the bulkhead pattern.
 type BulkheadConfig struct {
 	Enabled        bool          `json:"enabled"`
 	MaxConcurrent  int           `json:"maxConcurrent"`
@@ -105,17 +122,23 @@ type BulkheadConfig struct {
 	AcquireTimeout time.Duration `json:"acquireTimeout"`
 }
 
+// MetricsConfig contains configuration for metrics publishing.
+//
+//nolint:govet // Small config struct - minimal alignment benefit
 type MetricsConfig struct {
-	Enabled         bool          `json:"enabled"`
 	PublishInterval time.Duration `json:"publishInterval"`
 	DataDog         DataDogConfig `json:"datadog"`
+	Enabled         bool          `json:"enabled"`
 }
 
+// DataDogConfig contains configuration for DataDog metrics publishing.
+//
+//nolint:govet // Small config struct - minimal alignment benefit
 type DataDogConfig struct {
-	Enabled                bool     `json:"enabled"`
-	AgentHost              string   `json:"agentHost"`
-	Port                   int      `json:"port"`
-	Prefix                 string   `json:"prefix"`
 	Tags                   []string `json:"tags"`
+	AgentHost              string   `json:"agentHost"`
+	Prefix                 string   `json:"prefix"`
+	Port                   int      `json:"port"`
 	PublishIntervalSeconds int      `json:"publishIntervalSeconds"`
+	Enabled                bool     `json:"enabled"`
 }

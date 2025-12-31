@@ -296,6 +296,7 @@ func TestValidateKey(t *testing.T) {
 }
 
 func TestIsInvalidKey(t *testing.T) {
+	//nolint:govet // Test table - alignment not critical
 	tests := []struct {
 		name   string
 		err    error

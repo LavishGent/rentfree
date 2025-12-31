@@ -9,10 +9,12 @@ type SecretString struct {
 	value string
 }
 
+// NewSecretString creates a new SecretString with the provided value.
 func NewSecretString(value string) SecretString {
 	return SecretString{value: value}
 }
 
+// Value returns the underlying secret value.
 func (s SecretString) Value() string {
 	return s.value
 }
@@ -24,6 +26,7 @@ func (s SecretString) String() string {
 	return "[REDACTED]"
 }
 
+// MarshalJSON marshals the secret string as "[REDACTED]" to prevent leakage.
 func (s SecretString) MarshalJSON() ([]byte, error) {
 	if s.value == "" {
 		return json.Marshal("")
@@ -31,6 +34,7 @@ func (s SecretString) MarshalJSON() ([]byte, error) {
 	return json.Marshal("[REDACTED]")
 }
 
+// UnmarshalJSON unmarshals a JSON value into the secret string.
 func (s *SecretString) UnmarshalJSON(data []byte) error {
 	var value string
 	if err := json.Unmarshal(data, &value); err != nil {
@@ -40,6 +44,7 @@ func (s *SecretString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// IsEmpty returns true if the secret string has no value.
 func (s SecretString) IsEmpty() bool {
 	return s.value == ""
 }

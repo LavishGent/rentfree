@@ -31,7 +31,10 @@ func Load(path string) (*Config, error) {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
 
-	return cfg, cfg.Validate()
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+	return cfg, nil
 }
 
 // LoadWithEnv loads configuration from a JSON file and applies environment overrides.
@@ -42,9 +45,13 @@ func LoadWithEnv(path string) (*Config, error) {
 	}
 
 	applyEnvOverrides(cfg)
-	return cfg, cfg.Validate()
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+	return cfg, nil
 }
 
+//nolint:gocyclo // Environment variable parsing requires many conditional checks
 func applyEnvOverrides(cfg *Config) {
 	if v := os.Getenv("RENTFREE_MEMORY_ENABLED"); v != "" {
 		cfg.Memory.Enabled = parseBool(v)
@@ -151,6 +158,7 @@ func applyEnvOverrides(cfg *Config) {
 	}
 }
 
+// Validate checks if the configuration is valid.
 func (c *Config) Validate() error {
 	if c.Memory.Enabled {
 		if c.Memory.MaxSizeMB <= 0 {

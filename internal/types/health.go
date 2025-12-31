@@ -30,10 +30,10 @@ func (s HealthStatus) String() string {
 
 // HealthMetrics contains overall cache health information.
 type HealthMetrics struct {
-	Status    HealthStatus
 	Timestamp time.Time
-	Memory    MemoryHealthMetrics
 	Redis     RedisHealthMetrics
+	Memory    MemoryHealthMetrics
+	Status    HealthStatus
 }
 
 // MemoryHealthMetrics contains memory cache health details.
@@ -51,30 +51,32 @@ type MemoryHealthMetrics struct {
 }
 
 // RedisHealthMetrics contains Redis cache health details.
+//
+//nolint:govet // Metrics struct - logical grouping prioritized for readability
 type RedisHealthMetrics struct {
-	Status              HealthStatus
-	Available           bool
-	Connected           bool
-	CircuitBreakerState string
-	PendingWrites       int
+	LastErrorTime       time.Time
 	DroppedWrites       int64
 	HitCount            int64
 	MissCount           int64
 	HitRatio            float64
+	CircuitBreakerState string
 	LastError           string
-	LastErrorTime       time.Time
+	PendingWrites       int
+	Status              HealthStatus
+	Available           bool
+	Connected           bool
 }
 
 // MetricsSnapshot contains a point-in-time view of cache metrics.
+//
+//nolint:govet // Metrics struct with many counters - grouping by category improves readability
 type MetricsSnapshot struct {
 	Timestamp time.Time
-
 	// Hit/miss counters
 	MemoryHits   int64
 	MemoryMisses int64
 	RedisHits    int64
 	RedisMisses  int64
-
 	// Operation counters
 	GetCount    int64
 	SetCount    int64

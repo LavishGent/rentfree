@@ -9,11 +9,15 @@ import (
 	"github.com/LavishGent/rentfree/internal/config"
 )
 
+// State represents the state of a circuit breaker.
 type State int32
 
 const (
+	// StateClosed means the circuit breaker is closed and requests are allowed.
 	StateClosed State = iota
+	// StateOpen means the circuit breaker is open and requests are rejected.
 	StateOpen
+	// StateHalfOpen means the circuit breaker is testing if the service has recovered.
 	StateHalfOpen
 )
 
@@ -31,30 +35,28 @@ func (s State) String() string {
 }
 
 // CircuitBreaker implements the circuit breaker pattern for fault tolerance.
+//
+//nolint:govet // Complex state management struct - readability prioritized
 type CircuitBreaker struct {
-	name string
-
+	onStateChange       func(from, to State)
+	state               atomic.Int32
+	openedAt            time.Time
+	openDuration        time.Duration
+	name                string
+	mu                  sync.Mutex
 	failureThreshold    int
 	successThreshold    int
-	openDuration        time.Duration
 	halfOpenMaxRequests int
-
-	state atomic.Int32
-
-	mu               sync.Mutex
-	consecutiveFails int
-	consecutiveSuccs int
-	halfOpenRequests int
-	openedAt         time.Time
-
-	onStateChange func(from, to State)
+	consecutiveFails    int
+	consecutiveSuccs    int
+	halfOpenRequests    int
 }
 
 // stateTransition allows callbacks to be invoked outside the mutex to prevent deadlocks.
 type stateTransition struct {
+	callback func(from, to State)
 	from     State
 	to       State
-	callback func(from, to State)
 }
 
 // NewCircuitBreaker creates a new circuit breaker with the given configuration.

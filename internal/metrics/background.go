@@ -13,13 +13,12 @@ import (
 // with context-based cancellation support.
 type BackgroundPublisher struct {
 	publisher rentfree.Publisher
-	interval  time.Duration
 	logger    *slog.Logger
 	getHealth func() *rentfree.PublisherHealthMetrics
-
-	ctx    context.Context
-	cancel context.CancelFunc
-	wg     sync.WaitGroup
+	cancel    context.CancelFunc
+	ctx       context.Context
+	wg        sync.WaitGroup
+	interval  time.Duration
 }
 
 // NewBackgroundPublisher creates a new background publisher.
