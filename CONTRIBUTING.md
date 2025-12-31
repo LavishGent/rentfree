@@ -163,7 +163,7 @@ rentfree/
 │   └── types/        # Shared types
 ├── pkg/
 │   └── rentfree/     # Public API
-└── .github/          # CI/CD workflows
+└── .github/          # GitHub Actions workflows
 ```
 
 ## Reporting Issues
